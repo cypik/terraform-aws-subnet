@@ -19,7 +19,7 @@ To use this module, include it in your Terraform configuration file and provide 
 
 ```hcl
 module "private-subnets" {
-  source              = "./../../"
+  source              = "git::https://github.com/opz0/terraform-aws-subnet.git?ref=v1.0.0"
   name                = "app"
   environment         = "test"
   nat_gateway_enabled = true
@@ -39,7 +39,7 @@ You can customize the input variables according to your specific requirements.
 
 ```hcl
 module "subnets" {
-  source              = "./../../"
+  source              = "git::https://github.com/opz0/terraform-aws-subnet.git?ref=v1.0.0"
   nat_gateway_enabled = true
   single_nat_gateway  = true
   name                = "app"
@@ -59,7 +59,7 @@ You can customize the input variables according to your specific requirements.
 
 ```hcl
 module "subnets" {
-  source                                         = "./../../"
+  source                                         = "git::https://github.com/opz0/terraform-aws-subnet.git?ref=v1.0.0"
   name                                           = "app"
   environment                                    = "test"
   nat_gateway_enabled                            = true
@@ -80,7 +80,7 @@ You can customize the input variables according to your specific requirements.
 
 ```hcl
 module "subnet" {
-  source             = "./../.."
+  source             = "git::https://github.com/opz0/terraform-aws-subnet.git?ref=v1.0.0"
   name               = "app"
   environment        = "test"
   availability_zones = ["us-east-1a", "us-east-1b", "us-east-1c"]
