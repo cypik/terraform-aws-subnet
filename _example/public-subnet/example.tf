@@ -3,22 +3,18 @@ provider "aws" {
 }
 
 
-##----------------------------------------------------------------------------- 
-## Vpc Module call.    
+##-----------------------------------------------------------------------------
+## Vpc Module call.
 ##-----------------------------------------------------------------------------
 module "vpc" {
-  source                              = "git::git@github.com:opz0/terraform-aws-vpc.git?ref=master"
-  name                                = "app"
-  environment                         = "test"
-  cidr_block                          = "10.0.0.0/16"
-  enable_flow_log                     = true # Flow logs will be stored in cloudwatch log group. Variables passed in default.
-  create_flow_log_cloudwatch_iam_role = true
-  dhcp_options_domain_name            = "service.consul"
-  dhcp_options_domain_name_servers    = ["127.0.0.1", "10.10.0.2"]
-  assign_generated_ipv6_cidr_block    = true
+  source      = "git::https://github.com/opz0/terraform-aws-vpc.git?ref=v1.0.0"
+  name        = "app"
+  environment = "test"
+  cidr_block  = "10.0.0.0/16"
+
 }
 
-##----------------------------------------------------------------------------- 
+##-----------------------------------------------------------------------------
 ## Subnet Module call.
 ##-----------------------------------------------------------------------------
 

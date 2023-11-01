@@ -126,8 +126,6 @@ variable "map_public_ip_on_launch" {
   description = "Specify true to indicate that instances launched into the public subnet should be assigned a public IP address."
 }
 
-#Module      : FLOW LOG
-#Description : Terraform flow log module variables.
 variable "flow_log_destination_arn" {
   type        = string
   default     = null

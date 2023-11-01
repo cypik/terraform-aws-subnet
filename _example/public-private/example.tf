@@ -2,16 +2,14 @@ provider "aws" {
   region = "eu-west-1"
 }
 
-##----------------------------------------------------------------------------- 
-## Vpc Module call.    
+##-----------------------------------------------------------------------------
+## Vpc Module call.
 ##-----------------------------------------------------------------------------
 module "vpc" {
-  source                              = "git::git@github.com:opz0/terraform-aws-vpc.git?ref=master"
-  name                                = "app"
-  environment                         = "test"
-  cidr_block                          = "10.0.0.0/16"
-  enable_flow_log                     = true # Flow logs will be stored in cloudwatch log group. Variables passed in default.
-  create_flow_log_cloudwatch_iam_role = true
+  source      = "git::https://github.com/opz0/terraform-aws-vpc.git?ref=v1.0.0"
+  name        = "app"
+  environment = "test"
+  cidr_block  = "10.0.0.0/16"
 }
 
 ##-----------------------------------------------------------------------------
