@@ -19,7 +19,7 @@ To use this module, include it in your Terraform configuration file and provide 
 
 ```hcl
 module "private-subnets" {
-  source              = "git::https://github.com/opz0/terraform-aws-subnet.git?ref=v1.0.0"
+  source              = "git::https://github.com/cypik/terraform-aws-subnet.git?ref=v1.0.0"
   name                = "app"
   environment         = "test"
   nat_gateway_enabled = true
@@ -39,7 +39,7 @@ You can customize the input variables according to your specific requirements.
 
 ```hcl
 module "subnets" {
-  source              = "git::https://github.com/opz0/terraform-aws-subnet.git?ref=v1.0.0"
+  source              = "git::https://github.com/cypik/terraform-aws-subnet.git?ref=v1.0.0"
   nat_gateway_enabled = true
   single_nat_gateway  = true
   name                = "app"
@@ -59,7 +59,7 @@ You can customize the input variables according to your specific requirements.
 
 ```hcl
 module "subnets" {
-  source                                         = "git::https://github.com/opz0/terraform-aws-subnet.git?ref=v1.0.0"
+  source                                         = "git::https://github.com/cypik/terraform-aws-subnet.git?ref=v1.0.0"
   name                                           = "app"
   environment                                    = "test"
   nat_gateway_enabled                            = true
@@ -80,7 +80,7 @@ You can customize the input variables according to your specific requirements.
 
 ```hcl
 module "subnet" {
-  source             = "git::https://github.com/opz0/terraform-aws-subnet.git?ref=v1.0.0"
+  source             = "git::https://github.com/cypik/terraform-aws-subnet.git?ref=v1.0.0"
   name               = "app"
   environment        = "test"
   availability_zones = ["us-east-1a", "us-east-1b", "us-east-1c"]
@@ -135,10 +135,10 @@ The module provides useful outputs that you can use in your Terraform configurat
 Additional outputs may be available depending on the specific module version. Refer to the module documentation for details.
 
 ## Examples
-For detailed examples on how to use this module, please refer to the 'examples' directory within this repository.
+For detailed examples on how to use this module, please refer to the [Examples](https://github.com/cypik/terraform-aws-subnet/tree/master/_example) directory within this repository.
 
 ## Author
 Your Name Replace '[License Name]' and '[Your Name]' with the appropriate license and your information. Feel free to expand this README with additional details or usage instructions as needed for your specific use case.
 
 ## License
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/opz0/terraform-aws-subnet/blob/master/LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/cypik/terraform-aws-subnet/blob/master/LICENSE) file for details.
