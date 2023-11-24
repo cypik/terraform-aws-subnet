@@ -6,7 +6,7 @@ variable "name" {
 
 variable "repository" {
   type        = string
-  default     = "https://github.com/opz0/terraform-aws-subnet"
+  default     = "https://github.com/cypik/terraform-aws-subnet"
   description = "Terraform current module repo"
 }
 variable "environment" {
@@ -42,7 +42,7 @@ variable "tags" {
 variable "managedby" {
   type        = string
   default     = ""
-  description = "ManagedBy, eg 'Opz0'."
+  description = "ManagedBy, eg 'cypik'."
 }
 
 variable "availability_zones" {
