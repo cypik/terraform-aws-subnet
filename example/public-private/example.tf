@@ -18,8 +18,8 @@ module "vpc" {
 
 module "subnets" {
   source                                         = "./../../"
-  name                                           = "app"
-  environment                                    = "test"
+  name                                           = "app1"
+  environment                                    = "test1"
   nat_gateway_enabled                            = true
   availability_zones                             = ["eu-west-1a", "eu-west-1b"]
   vpc_id                                         = module.vpc.id
