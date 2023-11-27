@@ -20,7 +20,7 @@ module "private-subnets" {
   source              = "./../../"
   name                = "app"
   environment         = "test"
-  nat_gateway_enabled = false
+  nat_gateway_enabled = true
   availability_zones  = ["eu-west-1a"]
   vpc_id              = module.vpc.id
   type                = "private"
