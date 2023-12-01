@@ -19,13 +19,11 @@ module "vpc" {
 ##-----------------------------------------------------------------------------
 
 module "subnet" {
-  source             = "./../.."
+  source             = "./../../"
   name               = "app"
   environment        = "test"
-  availability_zones = ["eu-west-1a", "eu-west-1b", ]
-  type               = "public"
+  availability_zones = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
   vpc_id             = module.vpc.id
   cidr_block         = module.vpc.vpc_cidr_block
-  igw_id             = module.vpc.igw_id
-  enable_ipv6        = false
+  type               = "database"
 }
