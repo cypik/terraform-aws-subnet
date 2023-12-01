@@ -14,8 +14,8 @@ This Terraform code defines an AWS VPC and associated subnets using reusable mod
 
 ## Usage
 To use this module, include it in your Terraform configuration file and provide the required input variables. Below is an example of how to use the module:
-
-# private-subnet
+# Examples:
+# Example: private-subnet
 
 ```hcl
 module "private-subnets" {
@@ -35,15 +35,15 @@ module "private-subnets" {
 
 You can customize the input variables according to your specific requirements.
 
-# public-private-subnet-single-nat-gateway
+# Example: public-private-subnet-single-nat-gateway
 
 ```hcl
 module "subnets" {
   source              = "git::https://github.com/cypik/terraform-aws-subnet.git?ref=v1.0.0"
-  nat_gateway_enabled = true
-  single_nat_gateway  = true
   name                = "app"
   environment         = "test"
+  nat_gateway_enabled = true
+  single_nat_gateway  = true
   availability_zones  = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
   vpc_id              = module.vpc.id
   type                = "public-private"
@@ -55,7 +55,7 @@ module "subnets" {
 ```
 You can customize the input variables according to your specific requirements.
 
-# public-private
+# Example: public-private
 
 ```hcl
 module "subnets" {
@@ -76,23 +76,56 @@ module "subnets" {
 ```
 You can customize the input variables according to your specific requirements.
 
-# public-subnet
+# Example: public-subnet
 
 ```hcl
 module "subnet" {
   source             = "git::https://github.com/cypik/terraform-aws-subnet.git?ref=v1.0.0"
   name               = "app"
   environment        = "test"
-  availability_zones = ["us-east-1a", "us-east-1b", "us-east-1c"]
-  vpc_id             = module.vpc.id
+  availability_zones = ["eu-west-1a", "eu-west-1b", ]
   type               = "public"
+  vpc_id             = module.vpc.id
+  cidr_block         = module.vpc.vpc_cidr_block
   igw_id             = module.vpc.igw_id
-  ipv4_public_cidrs  = ["10.0.1.0/24", "10.0.13.0/24", "10.0.18.0/24"]
   enable_ipv6        = false
 }
 ```
 You can customize the input variables according to your specific requirements.
 
+# Example: database-subnet
+
+```hcl
+module "subnet" {
+  source             = "git::https://github.com/cypik/terraform-aws-subnet.git?ref=v1.0.0"
+  name               = "app"
+  environment        = "test"
+  availability_zones = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
+  vpc_id             = module.vpc.id
+  cidr_block         = module.vpc.vpc_cidr_block
+  type               = "database"
+}
+```
+You can customize the input variables according to your specific requirements.
+
+# Example: public-private-database-subnet
+
+```hcl
+module "subnet" {
+  source             = "git::https://github.com/cypik/terraform-aws-subnet.git?ref=v1.0.0"
+  name                = "app"
+  environment         = "test"
+  availability_zones  = ["eu-west-1a", "eu-west-1b", ]
+  vpc_id              = module.vpc.id
+  type                = "public-private-database"
+  nat_gateway_enabled = true
+  single_nat_gateway  = true
+  cidr_block          = module.vpc.vpc_cidr_block
+  ipv6_cidr_block     = module.vpc.ipv6_cidr_block
+  igw_id              = module.vpc.igw_id
+}
+```
+You can customize the input variables according to your specific requirements.
 ## Module Inputs
 Here are the input variables you can configure for the VPC and subnet modules:
 
