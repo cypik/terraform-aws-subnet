@@ -1,7 +1,8 @@
 locals {
-  public_count      = var.enable == true && (var.type == "public" || var.type == "public-private") ? length(var.availability_zones) : 0
-  private_count     = var.enable == true && (var.type == "private" || var.type == "public-private") ? length(var.availability_zones) : 0
-  nat_gateway_count = var.single_nat_gateway ? 1 : (var.enable == true && (var.type == "private" || var.type == "public-private") && var.nat_gateway_enabled == true ? length(var.availability_zones) : 0)
+  public_count      = var.enable == true && (var.type == "public" || var.type == "public-private" || var.type == "public-private-database") ? length(var.availability_zones) : 0
+  private_count     = var.enable == true && (var.type == "private" || var.type == "public-private" || var.type == "public-private-database") ? length(var.availability_zones) : 0
+  nat_gateway_count = var.single_nat_gateway ? 1 : (var.enable == true && (var.type == "private" || var.type == "public-private" || var.type == "public-private-database") && var.nat_gateway_enabled == true ? length(var.availability_zones) : 0)
+  database_count    = var.enable == true && (var.type == "database" || var.type == "public-private-database") ? length(var.availability_zones) : 0
 }
 ##-----------------------------------------------------------------------------
 ## Labels module called that will be used for naming and tags.
@@ -32,6 +33,19 @@ module "public-labels" {
   }
 }
 
+module "database-labels" {
+  source      = "git::https://github.com/cypik/terraform-aws-labels.git?ref=v1.0.0"
+  name        = var.name
+  repository  = var.repository
+  environment = var.environment
+  managedby   = var.managedby
+  label_order = var.label_order
+  attributes  = compact(concat(var.attributes, ["database"]))
+  extra_tags = {
+    Type = "database"
+  }
+}
+
 ##-----------------------------------------------------------------------------
 ## Below resource will deploy public subnets and its related components in aws environment.
 ##-----------------------------------------------------------------------------
@@ -39,7 +53,7 @@ resource "aws_subnet" "public" {
   count                                          = local.public_count
   vpc_id                                         = var.vpc_id
   availability_zone                              = element(var.availability_zones, count.index)
-  cidr_block                                     = length(var.ipv4_public_cidrs) == 0 ? cidrsubnet(var.cidr_block, ceil(log(local.public_count * 2, 2)), local.public_count + count.index) : var.ipv4_public_cidrs[count.index]
+  cidr_block                                     = length(var.ipv4_public_cidrs) == 0 ? cidrsubnet(var.cidr_block, ceil(log(local.public_count * 3, 2)), count.index) : var.ipv4_public_cidrs[count.index]
   ipv6_cidr_block                                = var.enable_ipv6 ? (length(var.public_ipv6_cidrs) == 0 ? cidrsubnet(var.ipv6_cidr_block, 8, count.index + 1) : var.public_ipv6_cidrs[count.index]) : null
   map_public_ip_on_launch                        = var.map_public_ip_on_launch
   assign_ipv6_address_on_creation                = var.enable_ipv6 && var.public_subnet_ipv6_native ? true : var.public_subnet_assign_ipv6_address_on_creation
@@ -69,7 +83,7 @@ resource "aws_subnet" "public" {
 ## Below resource will deploy network acl and its rules that will be attached to public subnets.
 ##-----------------------------------------------------------------------------
 resource "aws_network_acl" "public" {
-  count      = var.enable && local.public_count > 0 && var.enable_public_acl && (var.type == "public" || var.type == "public-private") ? 1 : 0
+  count      = var.enable && local.public_count > 0 && var.enable_public_acl && (var.type == "public" || var.type == "public-private" || var.type == "public-private-database") ? 1 : 0
   vpc_id     = var.vpc_id
   subnet_ids = aws_subnet.public[*].id
   tags       = module.public-labels.tags
@@ -77,7 +91,7 @@ resource "aws_network_acl" "public" {
 }
 
 resource "aws_network_acl_rule" "public_inbound" {
-  count           = var.enable && local.public_count > 0 && var.enable_public_acl && (var.type == "public" || var.type == "public-private") ? length(var.public_inbound_acl_rules) : 0
+  count           = var.enable && local.public_count > 0 && var.enable_public_acl && (var.type == "public" || var.type == "public-private" || var.type == "public-private-database") ? length(var.public_inbound_acl_rules) : 0
   network_acl_id  = aws_network_acl.public[0].id
   egress          = false
   rule_number     = var.public_inbound_acl_rules[count.index]["rule_number"]
@@ -92,7 +106,7 @@ resource "aws_network_acl_rule" "public_inbound" {
 }
 
 resource "aws_network_acl_rule" "public_outbound" {
-  count           = var.enable && local.public_count > 0 && var.enable_public_acl && (var.type == "public" || var.type == "public-private") ? length(var.public_outbound_acl_rules) : 0
+  count           = var.enable && local.public_count > 0 && var.enable_public_acl && (var.type == "public" || var.type == "public-private" || var.type == "public-private-database") ? length(var.public_outbound_acl_rules) : 0
   network_acl_id  = aws_network_acl.public[0].id
   egress          = true
   rule_number     = var.public_outbound_acl_rules[count.index]["rule_number"]
@@ -173,7 +187,7 @@ resource "aws_flow_log" "public_subnet_flow_log" {
   tags = merge(
     module.public-labels.tags,
     {
-      "Name" = format("%s-flowlog", module.public-labels.name)
+      "Name" = format("%s-subnet-flowlog", module.public-labels.name)
     }
   )
 }
@@ -185,7 +199,7 @@ resource "aws_subnet" "private" {
   count                                          = local.private_count
   vpc_id                                         = var.vpc_id
   availability_zone                              = element(var.availability_zones, count.index)
-  cidr_block                                     = length(var.ipv4_private_cidrs) == 0 ? cidrsubnet(var.cidr_block, local.public_count == 0 ? ceil(log(local.private_count * 2, 2)) : ceil(log(local.public_count * 2, 2)), count.index) : var.ipv4_private_cidrs[count.index]
+  cidr_block                                     = length(var.ipv4_private_cidrs) == 0 ? cidrsubnet(var.cidr_block, ceil(log(local.private_count * 3, 2)), count.index + local.public_count) : var.ipv4_private_cidrs[count.index]
   ipv6_cidr_block                                = var.enable_ipv6 ? (length(var.private_ipv6_cidrs) == 0 ? cidrsubnet(var.ipv6_cidr_block, 8, local.public_count + count.index + 1) : var.private_ipv6_cidrs[count.index]) : null
   assign_ipv6_address_on_creation                = var.enable_ipv6 && var.private_subnet_ipv6_native ? true : var.private_subnet_assign_ipv6_address_on_creation
   private_dns_hostname_type_on_launch            = var.private_subnet_private_dns_hostname_type_on_launch
@@ -217,7 +231,7 @@ resource "aws_subnet" "private" {
 ## Below resource will deploy network acl and its rules that will be attached to private subnets.
 ##-----------------------------------------------------------------------------
 resource "aws_network_acl" "private" {
-  count      = var.enable && var.enable_private_acl && (var.type == "private" || var.type == "public-private") ? 1 : 0
+  count      = var.enable && var.enable_private_acl && (var.type == "private" || var.type == "public-private" || var.type == "public-private-database") ? 1 : 0
   vpc_id     = var.vpc_id
   subnet_ids = aws_subnet.private[*].id
   tags       = module.private-labels.tags
@@ -225,7 +239,7 @@ resource "aws_network_acl" "private" {
 }
 
 resource "aws_network_acl_rule" "private_inbound" {
-  count           = var.enable && var.enable_private_acl && (var.type == "private" || var.type == "public-private") ? length(var.private_inbound_acl_rules) : 0
+  count           = var.enable && var.enable_private_acl && (var.type == "private" || var.type == "public-private" || var.type == "public-private-database") ? length(var.private_inbound_acl_rules) : 0
   network_acl_id  = aws_network_acl.private[0].id
   egress          = false
   rule_number     = var.private_inbound_acl_rules[count.index]["rule_number"]
@@ -240,7 +254,7 @@ resource "aws_network_acl_rule" "private_inbound" {
 }
 
 resource "aws_network_acl_rule" "private_outbound" {
-  count           = var.enable && var.enable_private_acl && (var.type == "private" || var.type == "public-private") ? length(var.private_inbound_acl_rules) : 0
+  count           = var.enable && var.enable_private_acl && (var.type == "private" || var.type == "public-private" || var.type == "public-private-database") ? length(var.private_inbound_acl_rules) : 0
   network_acl_id  = aws_network_acl.private[0].id
   egress          = true
   rule_number     = var.private_outbound_acl_rules[count.index]["rule_number"]
@@ -339,7 +353,136 @@ resource "aws_flow_log" "private_subnet_flow_log" {
   tags = merge(
     module.private-labels.tags,
     {
-      "Name" = format("%s-flowlog", module.private-labels.name)
+      "Name" = format("%s-subnet-flowlog", module.private-labels.name)
+    }
+  )
+}
+
+
+##################database
+##-----------------------------------------------------------------------------
+## Below resource will deploy public subnets and its related components in aws environment.
+##-----------------------------------------------------------------------------
+resource "aws_subnet" "database" {
+  count                                          = local.database_count
+  vpc_id                                         = var.vpc_id
+  availability_zone                              = element(var.availability_zones, count.index)
+  cidr_block                                     = length(var.ipv4_database_cidrs) == 0 ? cidrsubnet(var.cidr_block, ceil(log(local.database_count * 3, 2)), count.index + local.private_count + local.public_count) : var.ipv4_private_cidrs[count.index]
+  ipv6_cidr_block                                = var.enable_ipv6 ? (length(var.database_ipv6_cidrs) == 0 ? cidrsubnet(var.ipv6_cidr_block, 8, count.index + 1) : var.database_ipv6_cidrs[count.index]) : null
+  map_public_ip_on_launch                        = var.map_database_ip_on_launch
+  assign_ipv6_address_on_creation                = var.enable_ipv6 && var.database_subnet_ipv6_native ? true : var.database_subnet_assign_ipv6_address_on_creation
+  private_dns_hostname_type_on_launch            = var.database_subnet_private_dns_hostname_type_on_launch
+  ipv6_native                                    = var.enable_ipv6 && var.database_subnet_ipv6_native
+  enable_resource_name_dns_aaaa_record_on_launch = var.enable_ipv6 && var.database_subnet_enable_resource_name_dns_aaaa_record_on_launch
+  enable_resource_name_dns_a_record_on_launch    = !var.database_subnet_ipv6_native && var.database_subnet_enable_resource_name_dns_a_record_on_launch
+  enable_dns64                                   = var.enable_ipv6 && var.database_subnet_enable_dns64
+  tags = merge(
+    module.database-labels.tags, var.tags,
+    {
+      "Name" = format("%s%s%s", module.database-labels.id, var.delimiter, element(var.availability_zones, count.index))
+      "AZ"   = element(var.availability_zones, count.index)
+    }
+  )
+  lifecycle {
+    # Ignore tags added by kubernetes
+    ignore_changes = [
+      tags,
+      tags["kubernetes.io"],
+      tags["SubnetType"],
+    ]
+  }
+}
+
+##-----------------------------------------------------------------------------
+## Below resource will deploy network acl and its rules that will be attached to public subnets.
+##-----------------------------------------------------------------------------
+resource "aws_network_acl" "database" {
+  count      = var.enable && local.database_count > 0 && var.enable_database_acl && (var.type == "database" || var.type == "public-private-database") ? 1 : 0
+  vpc_id     = var.vpc_id
+  subnet_ids = aws_subnet.database[*].id
+  tags       = module.database-labels.tags
+  depends_on = [aws_subnet.database]
+}
+
+resource "aws_network_acl_rule" "database_inbound" {
+  count           = var.enable && local.database_count > 0 && var.enable_database_acl && (var.type == "database" || var.type == "public-private-database") ? length(var.database_inbound_acl_rules) : 0
+  network_acl_id  = aws_network_acl.database[0].id
+  egress          = false
+  rule_number     = var.database_inbound_acl_rules[count.index]["rule_number"]
+  rule_action     = var.database_inbound_acl_rules[count.index]["rule_action"]
+  from_port       = lookup(var.database_inbound_acl_rules[count.index], "from_port", null)
+  to_port         = lookup(var.database_inbound_acl_rules[count.index], "to_port", null)
+  icmp_code       = lookup(var.database_inbound_acl_rules[count.index], "icmp_code", null)
+  icmp_type       = lookup(var.database_inbound_acl_rules[count.index], "icmp_type", null)
+  protocol        = var.database_inbound_acl_rules[count.index]["protocol"]
+  cidr_block      = lookup(var.database_inbound_acl_rules[count.index], "cidr_block", null)
+  ipv6_cidr_block = lookup(var.database_inbound_acl_rules[count.index], "ipv6_cidr_block", null)
+}
+
+resource "aws_network_acl_rule" "database_outbound" {
+  count           = var.enable && local.database_count > 0 && var.enable_database_acl && (var.type == "database" || var.type == "public-private-database") ? length(var.database_outbound_acl_rules) : 0
+  network_acl_id  = aws_network_acl.database[0].id
+  egress          = true
+  rule_number     = var.database_outbound_acl_rules[count.index]["rule_number"]
+  rule_action     = var.database_outbound_acl_rules[count.index]["rule_action"]
+  from_port       = lookup(var.database_outbound_acl_rules[count.index], "from_port", null)
+  to_port         = lookup(var.database_outbound_acl_rules[count.index], "to_port", null)
+  icmp_code       = lookup(var.database_outbound_acl_rules[count.index], "icmp_code", null)
+  icmp_type       = lookup(var.database_outbound_acl_rules[count.index], "icmp_type", null)
+  protocol        = var.database_outbound_acl_rules[count.index]["protocol"]
+  cidr_block      = lookup(var.database_outbound_acl_rules[count.index], "cidr_block", null)
+  ipv6_cidr_block = lookup(var.database_outbound_acl_rules[count.index], "ipv6_cidr_block", null)
+}
+
+##-----------------------------------------------------------------------------
+## Below resources will deploy route table and routes for public subnet and will be associated to public subnets.
+##-----------------------------------------------------------------------------
+resource "aws_route_table" "database" {
+  count  = local.database_count
+  vpc_id = var.vpc_id
+  tags = merge(
+    module.database-labels.tags,
+    {
+      "Name" = format("%s%s%s-rt", module.database-labels.id, var.delimiter, element(var.availability_zones, count.index))
+      "AZ"   = element(var.availability_zones, count.index)
+    }
+  )
+}
+
+resource "aws_route_table_association" "database" {
+  count          = local.database_count
+  subnet_id      = element(aws_subnet.database[*].id, count.index)
+  route_table_id = element(aws_route_table.database[*].id, count.index)
+  depends_on = [
+    aws_subnet.database,
+    aws_route_table.database,
+  ]
+}
+##-----------------------------------------------------------------------------
+## Below resource will deploy flow logs for public subnet.
+##-----------------------------------------------------------------------------
+resource "aws_flow_log" "database_subnet_flow_log" {
+  count                    = var.enable && var.enable_flow_log && local.database_count > 0 ? 1 : 0
+  log_destination_type     = var.flow_log_destination_type
+  log_destination          = var.flow_log_destination_arn
+  log_format               = var.flow_log_log_format
+  iam_role_arn             = var.flow_log_iam_role_arn
+  traffic_type             = var.flow_log_traffic_type
+  subnet_id                = element(aws_subnet.database[*].id, count.index)
+  max_aggregation_interval = var.flow_log_max_aggregation_interval
+  dynamic "destination_options" {
+    for_each = var.flow_log_destination_type == "s3" ? [true] : []
+
+    content {
+      file_format                = var.flow_log_file_format
+      hive_compatible_partitions = var.flow_log_hive_compatible_partitions
+      per_hour_partition         = var.flow_log_per_hour_partition
+    }
+  }
+  tags = merge(
+    module.database-labels.tags,
+    {
+      "Name" = format("%s-subnet-flowlog", module.database-labels.name)
     }
   )
 }

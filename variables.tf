@@ -365,3 +365,93 @@ variable "public_rt_ipv6_destination_cidr" {
   default     = "::/0"
   description = "The destination ipv6 CIDR block."
 }
+
+variable "ipv4_database_cidrs" {
+  type        = list(any)
+  default     = []
+  description = "Subnet CIDR blocks (e.g. `10.0.0.0/16`)."
+}
+
+variable "database_ipv6_cidrs" {
+  type        = list(any)
+  default     = []
+  description = "database Subnet CIDR blocks (e.g. `2a05:d018:832:ca02::/64`)."
+}
+
+variable "map_database_ip_on_launch" {
+  type        = bool
+  default     = false
+  description = "Specify true to indicate that instances launched into the database subnet should be assigned a public IP address."
+}
+
+variable "database_subnet_ipv6_native" {
+  type        = bool
+  default     = false
+  description = "Indicates whether to create an IPv6-only database subnet. Default: `false`"
+}
+
+variable "database_subnet_private_dns_hostname_type_on_launch" {
+  type        = string
+  default     = null
+  description = "The type of hostnames to assign to instances in the subnet at launch. For IPv6-only subnets, an instance DNS name must be based on the instance ID. For dual-stack and IPv4-only subnets, you can specify whether DNS names use the instance IPv4 address or the instance ID. Valid values: `ip-name`, `resource-name`"
+}
+
+variable "database_subnet_enable_resource_name_dns_aaaa_record_on_launch" {
+  type        = bool
+  default     = false
+  description = "Indicates whether to respond to DNS queries for instance hostnames with DNS AAAA records. Default: `true`"
+}
+
+variable "database_subnet_enable_resource_name_dns_a_record_on_launch" {
+  type        = bool
+  default     = false
+  description = "Indicates whether to respond to DNS queries for instance hostnames with DNS A records. Default: `false`"
+}
+
+variable "database_subnet_assign_ipv6_address_on_creation" {
+  type        = bool
+  default     = false
+  description = "Specify true to indicate that network interfaces created in the specified subnet should be assigned an IPv6 address."
+}
+
+variable "database_subnet_enable_dns64" {
+  type        = bool
+  default     = false
+  description = "Indicates whether DNS queries made to the Amazon-provided DNS Resolver in this subnet should return synthetic IPv6 addresses for IPv4-only destinations. Default: `true`"
+}
+
+variable "enable_database_acl" {
+  type        = bool
+  default     = true
+  description = "Set to false to prevent the module from creating any resources."
+}
+
+variable "database_inbound_acl_rules" {
+  type = list(map(string))
+  default = [
+    {
+      rule_number = 100
+      rule_action = "allow"
+      from_port   = 0
+      to_port     = 0
+      protocol    = "-1"
+      cidr_block  = "0.0.0.0/0"
+    },
+  ]
+  description = "database subnets inbound network ACLs"
+}
+
+variable "database_outbound_acl_rules" {
+  type = list(map(string))
+  default = [
+    {
+      rule_number = 100
+      rule_action = "allow"
+      from_port   = 0
+      to_port     = 0
+      protocol    = "-1"
+      cidr_block  = "0.0.0.0/0"
+    },
+  ]
+  description = "database subnets outbound network ACLs"
+}

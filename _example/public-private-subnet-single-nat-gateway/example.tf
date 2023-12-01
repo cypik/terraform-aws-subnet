@@ -19,10 +19,10 @@ module "vpc" {
 
 module "subnets" {
   source              = "./../../"
-  nat_gateway_enabled = true
-  single_nat_gateway  = true
   name                = "app"
   environment         = "test"
+  nat_gateway_enabled = true
+  single_nat_gateway  = true
   availability_zones  = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
   vpc_id              = module.vpc.id
   type                = "public-private"
