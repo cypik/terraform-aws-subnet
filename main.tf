@@ -367,7 +367,7 @@ resource "aws_subnet" "database" {
   count                                          = local.database_count
   vpc_id                                         = var.vpc_id
   availability_zone                              = element(var.availability_zones, count.index)
-  cidr_block                                     = length(var.ipv4_database_cidrs) == 0 ? cidrsubnet(var.cidr_block, ceil(log(local.database_count * 3, 2)), count.index + local.private_count + local.public_count) : var.ipv4_private_cidrs[count.index]
+  cidr_block                                     = length(var.ipv4_database_cidrs) == 0 ? cidrsubnet(var.cidr_block, ceil(log(local.database_count * 3, 2)), count.index + local.private_count + local.public_count) : var.ipv4_database_cidrs[count.index]
   ipv6_cidr_block                                = var.enable_ipv6 ? (length(var.database_ipv6_cidrs) == 0 ? cidrsubnet(var.ipv6_cidr_block, 8, count.index + 1) : var.database_ipv6_cidrs[count.index]) : null
   map_public_ip_on_launch                        = var.map_database_ip_on_launch
   assign_ipv6_address_on_creation                = var.enable_ipv6 && var.database_subnet_ipv6_native ? true : var.database_subnet_assign_ipv6_address_on_creation
