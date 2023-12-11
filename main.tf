@@ -377,7 +377,7 @@ resource "aws_subnet" "database" {
   enable_resource_name_dns_a_record_on_launch    = !var.database_subnet_ipv6_native && var.database_subnet_enable_resource_name_dns_a_record_on_launch
   enable_dns64                                   = var.enable_ipv6 && var.database_subnet_enable_dns64
   tags = merge(
-    module.database-labels.tags, var.extra_database_tags
+    module.database-labels.tags, var.extra_database_tags,
     {
       "Name" = format("%s%s%s", module.database-labels.id, var.delimiter, element(var.availability_zones, count.index))
       "AZ"   = element(var.availability_zones, count.index)
