@@ -63,7 +63,7 @@ resource "aws_subnet" "public" {
   enable_resource_name_dns_a_record_on_launch    = !var.public_subnet_ipv6_native && var.public_subnet_enable_resource_name_dns_a_record_on_launch
   enable_dns64                                   = var.enable_ipv6 && var.public_subnet_enable_dns64
   tags = merge(
-    module.public-labels.tags, var.tags,
+    module.public-labels.tags, var.extra_public_tags,
     {
       "Name" = format("%s%s%s", module.public-labels.id, var.delimiter, element(var.availability_zones, count.index))
       "AZ"   = element(var.availability_zones, count.index)
@@ -214,7 +214,7 @@ resource "aws_subnet" "private" {
       "Name" = format("%s%s%s", module.private-labels.id, var.delimiter, element(var.availability_zones, count.index))
       "AZ"   = element(var.availability_zones, count.index)
     },
-    var.tags
+    var.extra_private_tags
   )
 
   lifecycle {
@@ -377,7 +377,7 @@ resource "aws_subnet" "database" {
   enable_resource_name_dns_a_record_on_launch    = !var.database_subnet_ipv6_native && var.database_subnet_enable_resource_name_dns_a_record_on_launch
   enable_dns64                                   = var.enable_ipv6 && var.database_subnet_enable_dns64
   tags = merge(
-    module.database-labels.tags, var.tags,
+    module.database-labels.tags, var.extra_database_tags
     {
       "Name" = format("%s%s%s", module.database-labels.id, var.delimiter, element(var.availability_zones, count.index))
       "AZ"   = element(var.availability_zones, count.index)
