@@ -4,6 +4,8 @@
 
 - [Introduction](#introduction)
 - [Usage](#usage)
+- [Examples](#Examples)
+- [Authors](#Authors)
 - [License](#license)
 - [Inputs](#inputs)
 - [Outputs](#outputs)
