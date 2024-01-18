@@ -5,7 +5,7 @@
 - [Introduction](#introduction)
 - [Usage](#usage)
 - [Examples](#Examples)
-- [Authors](#Authors)
+- [Author](#Author)
 - [License](#license)
 - [Inputs](#inputs)
 - [Outputs](#outputs)
