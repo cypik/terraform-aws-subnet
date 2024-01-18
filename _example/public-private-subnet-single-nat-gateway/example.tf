@@ -6,7 +6,8 @@ provider "aws" {
 ## Vpc Module call.
 ##-----------------------------------------------------------------------------
 module "vpc" {
-  source      = "git::https://github.com/cypik/terraform-aws-vpc.git?ref=v1.0.0"
+  source      = "cypik/vpc/aws"
+  version     = "1.0.1"
   name        = "app"
   environment = "test"
   cidr_block  = "10.0.0.0/16"
@@ -16,7 +17,6 @@ module "vpc" {
 ##-----------------------------------------------------------------------------
 ## Subnet Module call.
 ##-----------------------------------------------------------------------------
-
 module "subnets" {
   source              = "./../../"
   name                = "app"

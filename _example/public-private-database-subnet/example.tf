@@ -7,8 +7,9 @@ provider "aws" {
 ## Vpc Module call.
 ##-----------------------------------------------------------------------------
 module "vpc" {
-  source      = "git::https://github.com/cypik/terraform-aws-vpc.git?ref=v1.0.0"
-  name        = "appdd"
+  source      = "cypik/vpc/aws"
+  version     = "1.0.1"
+  name        = "app"
   environment = "test"
   cidr_block  = "10.0.0.0/16"
 

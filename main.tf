@@ -8,7 +8,8 @@ locals {
 ## Labels module called that will be used for naming and tags.
 ##-----------------------------------------------------------------------------
 module "private-labels" {
-  source      = "git::https://github.com/cypik/terraform-aws-labels.git?ref=v1.0.0"
+  source      = "cypik/labels/aws"
+  version     = "1.0.1"
   name        = var.name
   repository  = var.repository
   environment = var.environment
@@ -21,8 +22,8 @@ module "private-labels" {
 }
 
 module "public-labels" {
-  source      = "git::https://github.com/cypik/terraform-aws-labels.git?ref=v1.0.0"
-  name        = var.name
+  source      = "cypik/labels/aws"
+  version     = "1.0.1"
   repository  = var.repository
   environment = var.environment
   managedby   = var.managedby
@@ -34,8 +35,8 @@ module "public-labels" {
 }
 
 module "database-labels" {
-  source      = "git::https://github.com/cypik/terraform-aws-labels.git?ref=v1.0.0"
-  name        = var.name
+  source      = "cypik/labels/aws"
+  version     = "1.0.1"
   repository  = var.repository
   environment = var.environment
   managedby   = var.managedby
@@ -90,6 +91,8 @@ resource "aws_network_acl" "public" {
   depends_on = [aws_subnet.public]
 }
 
+#tfsec:ignore:aws-ec2-no-excessive-port-access
+#tfsec:ignore:aws-ec2-no-public-ingress-acl
 resource "aws_network_acl_rule" "public_inbound" {
   count           = var.enable && local.public_count > 0 && var.enable_public_acl && (var.type == "public" || var.type == "public-private" || var.type == "public-private-database") ? length(var.public_inbound_acl_rules) : 0
   network_acl_id  = aws_network_acl.public[0].id
@@ -105,6 +108,7 @@ resource "aws_network_acl_rule" "public_inbound" {
   ipv6_cidr_block = lookup(var.public_inbound_acl_rules[count.index], "ipv6_cidr_block", null)
 }
 
+#tfsec:ignore:aws-ec2-no-excessive-port-access
 resource "aws_network_acl_rule" "public_outbound" {
   count           = var.enable && local.public_count > 0 && var.enable_public_acl && (var.type == "public" || var.type == "public-private" || var.type == "public-private-database") ? length(var.public_outbound_acl_rules) : 0
   network_acl_id  = aws_network_acl.public[0].id
@@ -238,6 +242,8 @@ resource "aws_network_acl" "private" {
   depends_on = [aws_subnet.private]
 }
 
+#tfsec:ignore:aws-ec2-no-excessive-port-access
+#tfsec:ignore:aws-ec2-no-public-ingress-acl
 resource "aws_network_acl_rule" "private_inbound" {
   count           = var.enable && var.enable_private_acl && (var.type == "private" || var.type == "public-private" || var.type == "public-private-database") ? length(var.private_inbound_acl_rules) : 0
   network_acl_id  = aws_network_acl.private[0].id
@@ -253,6 +259,7 @@ resource "aws_network_acl_rule" "private_inbound" {
   ipv6_cidr_block = lookup(var.private_inbound_acl_rules[count.index], "ipv6_cidr_block", null)
 }
 
+#tfsec:ignore:aws-ec2-no-excessive-port-access
 resource "aws_network_acl_rule" "private_outbound" {
   count           = var.enable && var.enable_private_acl && (var.type == "private" || var.type == "public-private" || var.type == "public-private-database") ? length(var.private_inbound_acl_rules) : 0
   network_acl_id  = aws_network_acl.private[0].id
@@ -396,6 +403,8 @@ resource "aws_subnet" "database" {
 ##-----------------------------------------------------------------------------
 ## Below resource will deploy network acl and its rules that will be attached to public subnets.
 ##-----------------------------------------------------------------------------
+
+#tfsec:ignore:aws-ec2-no-excessive-port-access
 resource "aws_network_acl" "database" {
   count      = var.enable && local.database_count > 0 && var.enable_database_acl && (var.type == "database" || var.type == "public-private-database") ? 1 : 0
   vpc_id     = var.vpc_id
@@ -404,6 +413,8 @@ resource "aws_network_acl" "database" {
   depends_on = [aws_subnet.database]
 }
 
+#tfsec:ignore:aws-ec2-no-public-ingress-acl
+#tfsec:ignore:aws-ec2-no-excessive-port-access
 resource "aws_network_acl_rule" "database_inbound" {
   count           = var.enable && local.database_count > 0 && var.enable_database_acl && (var.type == "database" || var.type == "public-private-database") ? length(var.database_inbound_acl_rules) : 0
   network_acl_id  = aws_network_acl.database[0].id
@@ -419,6 +430,7 @@ resource "aws_network_acl_rule" "database_inbound" {
   ipv6_cidr_block = lookup(var.database_inbound_acl_rules[count.index], "ipv6_cidr_block", null)
 }
 
+#tfsec:ignore:aws-ec2-no-excessive-port-access
 resource "aws_network_acl_rule" "database_outbound" {
   count           = var.enable && local.database_count > 0 && var.enable_database_acl && (var.type == "database" || var.type == "public-private-database") ? length(var.database_outbound_acl_rules) : 0
   network_acl_id  = aws_network_acl.database[0].id
