@@ -26,7 +26,7 @@ module "private-subnets" {
   name                = "app"
   environment         = "test"
   nat_gateway_enabled = true
-  availability_zones  = ["eu-west-1a"]
+  availability_zones  = ["us-east-1a"]
   vpc_id              = module.vpc.id
   type                = "private"
   cidr_block          = module.vpc.vpc_cidr_block
@@ -46,7 +46,7 @@ module "subnets" {
   environment         = "test"
   nat_gateway_enabled = true
   single_nat_gateway  = true
-  availability_zones  = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
+  availability_zones  = ["us-east-1a", "us-east-1b", "us-east-1c"]
   vpc_id              = module.vpc.id
   type                = "public-private"
   igw_id              = module.vpc.igw_id
@@ -65,7 +65,7 @@ module "subnets" {
   name                                           = "app"
   environment                                    = "test"
   nat_gateway_enabled                            = true
-  availability_zones                             = ["eu-west-1a", "eu-west-1b"]
+  availability_zones                             = ["us-east-1a", "us-east-1b"]
   vpc_id                                         = module.vpc.id
   type                                           = "public-private"
   igw_id                                         = module.vpc.igw_id
@@ -85,7 +85,7 @@ module "subnet" {
   version            = "1.0.1"
   name               = "app"
   environment        = "test"
-  availability_zones = ["eu-west-1a", "eu-west-1b", ]
+  availability_zones = ["us-east-1a", "us-east-1b", ]
   type               = "public"
   vpc_id             = module.vpc.id
   cidr_block         = module.vpc.vpc_cidr_block
@@ -103,7 +103,7 @@ module "subnet" {
   version            = "1.0.1"
   name               = "app"
   environment        = "test"
-  availability_zones = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
+  availability_zones = ["us-east-1a", "us-east-1b", "us-east-1c"]
   vpc_id             = module.vpc.id
   cidr_block         = module.vpc.vpc_cidr_block
   type               = "database"
@@ -119,7 +119,7 @@ module "subnet" {
   version             = "1.0.1"
   name                = "app"
   environment         = "test"
-  availability_zones  = ["eu-west-1a", "eu-west-1b", ]
+  availability_zones  = ["us-east-1a", "us-east-1b", ]
   vpc_id              = module.vpc.id
   type                = "public-private-database"
   nat_gateway_enabled = true
