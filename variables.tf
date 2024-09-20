@@ -4,6 +4,12 @@ variable "name" {
   description = "Name  (e.g. `prod-subnet` or `subnet`)."
 }
 
+variable "availability_zone_ids" {
+  type        = list(string)
+  default     = ["az1", "az2"] # Replace with your actual AZ IDs
+  description = "A list of availability zone IDs where resources will be deployed. Replace with your actual AZ IDs."
+}
+
 variable "repository" {
   type        = string
   default     = "https://github.com/cypik/terraform-aws-subnet"
@@ -47,8 +53,8 @@ variable "extra_private_tags" {
 
 variable "managedby" {
   type        = string
-  default     = "cypik"
-  description = "ManagedBy, eg 'cypik'."
+  default     = "info@cypik.com"
+  description = "ManagedBy, eg 'info@cypik.com'"
 }
 
 variable "extra_database_tags" {
@@ -71,8 +77,7 @@ variable "type" {
 
 variable "vpc_id" {
   type        = string
-  description = "VPC ID."
-  sensitive   = true
+  description = "The VPC ID where the public and private subnets will be created."
 }
 
 variable "cidr_block" {
@@ -90,19 +95,19 @@ variable "ipv6_cidr_block" {
 variable "public_subnet_ids" {
   type        = list(string)
   default     = []
-  description = "A list of public subnet ids."
   sensitive   = true
-
+  description = "A list of public subnet ids."
+  #  sensitive   = true
 }
 
 variable "igw_id" {
   type        = string
   default     = ""
-  description = "Internet Gateway ID that is used as a default route when creating public subnets (e.g. `igw-9c26a123`)."
   sensitive   = true
+  description = "Internet Gateway ID that is used as a default route when creating public subnets (e.g. `igw-9c26a123`)."
 }
 
-variable "enable" {
+variable "enabled" {
   type        = bool
   default     = true
   description = "Set to false to prevent the module from creating any resources."
@@ -136,61 +141,6 @@ variable "map_public_ip_on_launch" {
   type        = bool
   default     = false
   description = "Specify true to indicate that instances launched into the public subnet should be assigned a public IP address."
-}
-
-variable "flow_log_destination_arn" {
-  type        = string
-  default     = null
-  description = "ARN of resource in which flow log will be sent."
-  sensitive   = true
-}
-
-variable "flow_log_destination_type" {
-  type        = string
-  default     = "cloud-watch-logs"
-  description = "Type of flow log destination. Can be s3 or cloud-watch-logs"
-}
-
-variable "flow_log_traffic_type" {
-  type        = string
-  default     = "ALL"
-  description = "Type of traffic to capture. Valid values: ACCEPT,REJECT, ALL."
-}
-
-variable "flow_log_log_format" {
-  type        = string
-  default     = null
-  description = "The fields to include in the flow log record, in the order in which they should appear"
-}
-
-variable "flow_log_iam_role_arn" {
-  type        = string
-  default     = null
-  description = "The ARN for the IAM role that's used to post flow logs to a CloudWatch Logs log group. When flow_log_destination_arn is set to ARN of Cloudwatch Logs, this argument needs to be provided"
-}
-
-variable "flow_log_max_aggregation_interval" {
-  type        = number
-  default     = 600
-  description = "The maximum interval of time during which a flow of packets is captured and aggregated into a flow log record. Valid Values: `60` seconds or `600` seconds"
-}
-
-variable "flow_log_file_format" {
-  type        = string
-  default     = null
-  description = "(Optional) The format for the flow log. Valid values: `plain-text`, `parquet`"
-}
-
-variable "flow_log_hive_compatible_partitions" {
-  type        = bool
-  default     = false
-  description = "(Optional) Indicates whether to use Hive-compatible prefixes for flow logs stored in Amazon S3"
-}
-
-variable "flow_log_per_hour_partition" {
-  type        = bool
-  default     = false
-  description = "(Optional) Indicates whether to partition the flow log per hour. This reduces the cost and response time for queries"
 }
 
 variable "public_ipv6_cidrs" {
@@ -236,8 +186,8 @@ variable "private_subnet_assign_ipv6_address_on_creation" {
 
 variable "public_subnet_private_dns_hostname_type_on_launch" {
   type        = string
-  default     = null
-  description = "The type of hostnames to assign to instances in the subnet at launch. For IPv6-only subnets, an instance DNS name must be based on the instance ID. For dual-stack and IPv4-only subnets, you can specify whether DNS names use the instance IPv4 address or the instance ID. Valid values: `ip-name`, `resource-name`"
+  default     = "ip-name" # or "resource-name", depending on your requirement
+  description = "The type of private DNS hostname to assign to instances in this subnet at launch. Must be either 'ip-name' or 'resource-name'."
 }
 
 variable "private_subnet_private_dns_hostname_type_on_launch" {
@@ -362,8 +312,15 @@ variable "private_outbound_acl_rules" {
 
 variable "nat_gateway_destination_cidr_block" {
   type        = string
-  default     = "0.0.0.0/0"
-  description = "Used to pass a custom destination route for private NAT Gateway. If not specified, the default 0.0.0.0/0 is used as a destination route"
+  default     = "0.0.0.0/0" # Commonly used for internet access
+  description = "The CIDR block for the NAT gateway route."
+}
+
+variable "nat_gateway_count" {
+  type        = number
+  default     = 1 # Adjust as needed
+  description = "The number of NAT gateways to create."
+
 }
 
 variable "public_rt_ipv4_destination_cidr" {
@@ -466,4 +423,195 @@ variable "database_outbound_acl_rules" {
     },
   ]
   description = "database subnets outbound network ACLs"
+}
+
+variable "assign_ipv6_address_on_creation" {
+  type        = bool
+  default     = false # Default to false, set to true if you want to enable IPv6 assignment
+  description = "Whether to assign an IPv6 address on subnet creation"
+}
+
+variable "enable_dns64" {
+  type        = bool
+  default     = false
+  description = "Enable DNS64 on the subnet"
+}
+variable "enable_resource_name_dns_aaaa_record_on_launch" {
+  type        = bool
+  default     = false
+  description = "Whether to enable the DNS AAAA record on launch"
+}
+
+variable "enable_resource_name_dns_a_record_on_launch" {
+  type        = bool
+  default     = false
+  description = "Whether to enable the DNS A record on launch"
+}
+
+variable "ipv6_native" {
+  type        = bool
+  default     = false
+  description = "Enable IPv6 native support"
+}
+
+variable "use_outpost" {
+  type        = bool
+  default     = false
+  description = "Set to true if using an Outpost, false otherwise."
+}
+
+variable "private_dns_hostname_type_on_launch" {
+  type        = string
+  default     = "resource-name" # Valid options: "ip-name", "resource-name"
+  description = "Type of private DNS hostname to assign to instances"
+}
+
+variable "enable_lni_at_device_index" {
+  type        = number
+  default     = null # Default to null (disabled unless specified)
+  description = "Indicates the device position for local network interfaces in this subnet. This is used for AWS Outposts only."
+}
+
+variable "map_customer_owned_ip_on_launch" {
+  type        = bool
+  default     = false
+  description = "Whether to map customer-owned IPs on launch"
+}
+
+variable "customer_owned_ipv4_pool" {
+  type        = string
+  default     = ""
+  description = "The customer-owned IPv4 address pool for the subnet"
+}
+
+variable "outpost_arn" {
+  type        = string
+  default     = ""
+  description = "The ARN of the Outpost to create the subnet in"
+}
+
+output "created_subnet_ids" {
+  value       = aws_subnet.public[*].id
+  description = "The IDs of the subnets created in the public availability zones."
+}
+
+##### database_subnet_flow_log #####
+
+variable "flow_log_destination_arn" {
+  type        = string
+  default     = null
+  sensitive   = true
+  description = "ARN of resource in which flow log will be sent."
+}
+
+variable "flow_log_destination_type" {
+  type        = string
+  default     = "cloud-watch-logs"
+  description = "Type of flow log destination. Can be s3 or cloud-watch-logs"
+}
+
+variable "flow_log_traffic_type" {
+  type        = string
+  default     = "ALL"
+  description = "Type of traffic to capture. Valid values: ACCEPT,REJECT, ALL."
+}
+
+variable "flow_log_log_format" {
+  type        = string
+  default     = null
+  description = "The fields to include in the flow log record, in the order in which they should appear"
+}
+
+variable "flow_log_iam_role_arn" {
+  type        = string
+  default     = null
+  description = "The ARN for the IAM role that's used to post flow logs to a CloudWatch Logs log group. When flow_log_destination_arn is set to ARN of Cloudwatch Logs, this argument needs to be provided"
+}
+
+variable "flow_log_max_aggregation_interval" {
+  type        = number
+  default     = 600
+  description = "The maximum interval of time during which a flow of packets is captured and aggregated into a flow log record. Valid Values: `60` seconds or `600` seconds"
+}
+
+##### Optional variables added
+
+variable "flow_log_deliver_cross_account_role" {
+  type        = string
+  default     = null
+  description = "The ARN of the IAM role that allows Amazon EC2 to publish flow logs across accounts."
+}
+
+variable "flow_log_eni_id" {
+  type        = string
+  default     = null
+  description = "Elastic Network Interface ID to attach to."
+}
+
+variable "flow_log_transit_gateway_id" {
+  type        = string
+  default     = null
+  description = "Transit Gateway ID to attach to."
+}
+
+variable "flow_log_transit_gateway_attachment_id" {
+  type        = string
+  default     = null
+  description = "Transit Gateway Attachment ID to attach to."
+}
+
+# Variables for destination options (if logging to S3)
+
+variable "flow_log_file_format" {
+  type        = string
+  default     = null
+  description = "(Optional) The format for the flow log. Valid values: `plain-text`, `parquet`"
+}
+
+variable "flow_log_hive_compatible_partitions" {
+  type        = bool
+  default     = false
+  description = "(Optional) Indicates whether to use Hive-compatible prefixes for flow logs stored in Amazon S3"
+}
+
+variable "flow_log_per_hour_partition" {
+  type        = bool
+  default     = false
+  description = "(Optional) Indicates whether to partition the flow log per hour. This reduces the cost and response time for queries"
+}
+
+variable "flow_log_vpc_id" {
+  type        = string
+  default     = null
+  description = "VPC ID to attach to."
+}
+
+variable "flow_log_log_group_name" {
+  type        = string
+  default     = null
+  description = "The name of the CloudWatch log group (deprecated)."
+}
+
+variable "eni_id" {
+  type        = string
+  default     = null
+  description = "Elastic Network Interface ID to attach to."
+}
+
+variable "log_group_name" {
+  type        = string
+  default     = null
+  description = "Deprecated: The name of the CloudWatch log group. Either log_group_name or log_destination must be set."
+}
+
+variable "transit_gateway_id" {
+  type        = string
+  default     = null
+  description = "Transit Gateway ID to attach to."
+}
+
+variable "deliver_cross_account_role" {
+  type        = string
+  default     = null
+  description = "ARN of the IAM role that allows Amazon EC2 to publish flow logs across accounts."
 }

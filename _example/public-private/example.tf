@@ -7,7 +7,7 @@ provider "aws" {
 ##-----------------------------------------------------------------------------
 module "vpc" {
   source      = "cypik/vpc/aws"
-  version     = "1.0.1"
+  version     = "1.0.2"
   name        = "app"
   environment = "test"
   cidr_block  = "10.0.0.0/16"
@@ -23,7 +23,7 @@ module "subnets" {
   environment                                    = "test"
   nat_gateway_enabled                            = true
   availability_zones                             = ["eu-west-1a", "eu-west-1b"]
-  vpc_id                                         = module.vpc.id
+  vpc_id                                         = module.vpc.vpc_id
   type                                           = "public-private"
   igw_id                                         = module.vpc.igw_id
   cidr_block                                     = module.vpc.vpc_cidr_block
