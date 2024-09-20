@@ -4,12 +4,6 @@ variable "name" {
   description = "Name  (e.g. `prod-subnet` or `subnet`)."
 }
 
-variable "availability_zone_ids" {
-  type        = list(string)
-  default     = ["az1", "az2"] # Replace with your actual AZ IDs
-  description = "A list of availability zone IDs where resources will be deployed. Replace with your actual AZ IDs."
-}
-
 variable "repository" {
   type        = string
   default     = "https://github.com/cypik/terraform-aws-subnet"
@@ -316,13 +310,6 @@ variable "nat_gateway_destination_cidr_block" {
   description = "The CIDR block for the NAT gateway route."
 }
 
-variable "nat_gateway_count" {
-  type        = number
-  default     = 1 # Adjust as needed
-  description = "The number of NAT gateways to create."
-
-}
-
 variable "public_rt_ipv4_destination_cidr" {
   type        = string
   default     = "0.0.0.0/0"
@@ -423,47 +410,6 @@ variable "database_outbound_acl_rules" {
     },
   ]
   description = "database subnets outbound network ACLs"
-}
-
-variable "assign_ipv6_address_on_creation" {
-  type        = bool
-  default     = false # Default to false, set to true if you want to enable IPv6 assignment
-  description = "Whether to assign an IPv6 address on subnet creation"
-}
-
-variable "enable_dns64" {
-  type        = bool
-  default     = false
-  description = "Enable DNS64 on the subnet"
-}
-variable "enable_resource_name_dns_aaaa_record_on_launch" {
-  type        = bool
-  default     = false
-  description = "Whether to enable the DNS AAAA record on launch"
-}
-
-variable "enable_resource_name_dns_a_record_on_launch" {
-  type        = bool
-  default     = false
-  description = "Whether to enable the DNS A record on launch"
-}
-
-variable "ipv6_native" {
-  type        = bool
-  default     = false
-  description = "Enable IPv6 native support"
-}
-
-variable "use_outpost" {
-  type        = bool
-  default     = false
-  description = "Set to true if using an Outpost, false otherwise."
-}
-
-variable "private_dns_hostname_type_on_launch" {
-  type        = string
-  default     = "resource-name" # Valid options: "ip-name", "resource-name"
-  description = "Type of private DNS hostname to assign to instances"
 }
 
 variable "enable_lni_at_device_index" {
@@ -586,27 +532,15 @@ variable "flow_log_vpc_id" {
   description = "VPC ID to attach to."
 }
 
-variable "flow_log_log_group_name" {
-  type        = string
-  default     = null
-  description = "The name of the CloudWatch log group (deprecated)."
-}
-
 variable "eni_id" {
   type        = string
   default     = null
   description = "Elastic Network Interface ID to attach to."
 }
 
-variable "log_group_name" {
-  type        = string
-  default     = null
-  description = "Deprecated: The name of the CloudWatch log group. Either log_group_name or log_destination must be set."
-}
-
 variable "transit_gateway_id" {
   type        = string
-  default     = null
+  default = null
   description = "Transit Gateway ID to attach to."
 }
 
