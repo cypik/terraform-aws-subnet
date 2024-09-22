@@ -540,7 +540,7 @@ variable "eni_id" {
 
 variable "transit_gateway_id" {
   type        = string
-  default = null
+  default     = null
   description = "Transit Gateway ID to attach to."
 }
 
