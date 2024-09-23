@@ -177,11 +177,6 @@ output "private_subnet_arn" {
   description = "ARNs of all private subnets"
 }
 
-output "var_public_subnet_ids" {
-  value       = var.public_subnet_ids
-  description = "Public subnet IDs passed as a variable"
-}
-
 output "private_subnet_vpc_id" {
   value       = aws_subnet.private[*].vpc_id
   description = "VPC IDs of all private subnets"

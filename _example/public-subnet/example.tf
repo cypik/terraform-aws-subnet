@@ -28,5 +28,6 @@ module "subnet" {
   vpc_id             = module.vpc.vpc_id
   cidr_block         = module.vpc.vpc_cidr_block
   igw_id             = module.vpc.igw_id
-  enable_ipv6        = false
+  enable_ipv6        = true
+  ipv6_cidr_block    = module.vpc.ipv6_cidr_block
 }

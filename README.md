@@ -33,6 +33,7 @@ module "private-subnets" {
   ipv6_cidr_block     = module.vpc.ipv6_cidr_block
   ipv4_private_cidrs  = ["10.0.3.0/24"]
   public_subnet_ids   = ["subnet-07962e9e61ad3bcd3"]
+  enable_ipv6         = true
 }
 ```
 
@@ -52,7 +53,7 @@ module "subnets" {
   igw_id              = module.vpc.igw_id
   cidr_block          = module.vpc.vpc_cidr_block
   ipv6_cidr_block     = module.vpc.ipv6_cidr_block
-  enable_ipv6         = false
+  enable_ipv6         = true
 }
 
 ```
@@ -63,18 +64,16 @@ module "subnets" {
 module "subnets" {
   source                                         = "cypik/subnet/aws"
   version                                        = "1.0.3"
-  name                                           = "app"
-  environment                                    = "test"
-  nat_gateway_enabled                            = true
-  availability_zones                             = ["eu-west-1a", "eu-west-1b"]
-  vpc_id                                         = module.vpc.vpc_id
-  type                                           = "public-private"
-  igw_id                                         = module.vpc.igw_id
-  cidr_block                                     = module.vpc.vpc_cidr_block
-  ipv6_cidr_block                                = module.vpc.ipv6_cidr_block
-  public_subnet_assign_ipv6_address_on_creation  = true
-  enable_ipv6                                    = true
-  private_subnet_assign_ipv6_address_on_creation = true
+  name                = "app"
+  environment         = "test"
+  nat_gateway_enabled = true
+  availability_zones  = ["us-east-1a", "us-east-1b"]
+  vpc_id              = module.vpc.vpc_id
+  type                = "public-private"
+  igw_id              = module.vpc.igw_id
+  cidr_block          = module.vpc.vpc_cidr_block
+  ipv6_cidr_block     = module.vpc.ipv6_cidr_block
+  enable_ipv6         = true
 }
 ```
 
@@ -91,7 +90,8 @@ module "subnet" {
   vpc_id             = module.vpc.vpc_id
   cidr_block         = module.vpc.vpc_cidr_block
   igw_id             = module.vpc.igw_id
-  enable_ipv6        = false
+  enable_ipv6        = true
+  ipv6_cidr_block    = module.vpc.ipv6_cidr_block
 }
 ```
 
@@ -108,8 +108,9 @@ module "subnet" {
   vpc_id             = module.vpc.vpc_id
   cidr_block         = module.vpc.vpc_cidr_block
   type               = "database"
+  enable_ipv6        = true
+  ipv6_cidr_block    = module.vpc.ipv6_cidr_block
 }
-
 ```
 You can customize the input variables according to your specific requirements.
 
@@ -327,5 +328,4 @@ This project is licensed under the **MIT** License - see the [LICENSE](https://g
 | <a name="output_public_subnet_tags_all"></a> [public\_subnet\_tags\_all](#output\_public\_subnet\_tags\_all) | All tags for public subnets |
 | <a name="output_public_tags"></a> [public\_tags](#output\_public\_tags) | A mapping of public tags to assign to the resource. |
 | <a name="output_route_table_vpc_id"></a> [route\_table\_vpc\_id](#output\_route\_table\_vpc\_id) | VPC IDs of all private route tables |
-| <a name="output_var_public_subnet_ids"></a> [var\_public\_subnet\_ids](#output\_var\_public\_subnet\_ids) | Public subnet IDs passed as a variable |
 <!-- END_TF_DOCS -->

@@ -27,4 +27,6 @@ module "subnet" {
   vpc_id             = module.vpc.vpc_id
   cidr_block         = module.vpc.vpc_cidr_block
   type               = "database"
+  enable_ipv6        = true
+  ipv6_cidr_block    = module.vpc.ipv6_cidr_block
 }
