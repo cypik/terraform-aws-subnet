@@ -32,3 +32,18 @@ output "public_subnet_id" {
   value       = module.subnets.private_subnet_id
   description = "The ID of the public subnet"
 }
+
+output "flow_log_id" {
+  value       = module.subnets.flow_log_id
+  description = "The Flow Log ID."
+}
+
+output "flow_log_arn" {
+  value       = module.subnets.flow_log_arn
+  description = "The ARN of the Flow Log."
+}
+
+output "flow_log_tags_all" {
+  value       = module.subnets.flow_log_tags_all
+  description = "A map of tags assigned to the resource, including those inherited from the provider default_tags configuration block."
+}
