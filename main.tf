@@ -1,8 +1,8 @@
 locals {
-  public_count      = var.enabled == true && (var.type == "public" || var.type == "public-private" || var.type == "public-private-database") ? length(var.availability_zones) : 0
+  public_count      = var.enabled == true && (var.type == "public" || var.type == "public-private" || var.type == "public-private-database" || var.type == "public-database") ? length(var.availability_zones) : 0
   private_count     = var.enabled == true && (var.type == "private" || var.type == "public-private" || var.type == "public-private-database") ? length(var.availability_zones) : 0
   nat_gateway_count = var.single_nat_gateway ? 1 : (var.enabled == true && (var.type == "private" || var.type == "public-private" || var.type == "public-private-database") && var.nat_gateway_enabled == true ? length(var.availability_zones) : 0)
-  database_count    = var.enabled == true && (var.type == "database" || var.type == "public-private-database") ? length(var.availability_zones) : 0
+  database_count    = var.enabled == true && (var.type == "database" || var.type == "public-private-database" || var.type == "public-database") ? length(var.availability_zones) : 0
 }
 ##-----------------------------------------------------------------------------
 ## Labels module called that will be used for naming and tags.
@@ -87,7 +87,7 @@ resource "aws_subnet" "public" {
 ## Below resource will deploy network acl and its rules that will be attached to public subnets.
 ##-----------------------------------------------------------------------------
 resource "aws_network_acl" "public" {
-  count      = var.enabled && local.public_count > 0 && var.enable_public_acl && (var.type == "public" || var.type == "public-private" || var.type == "public-private-database") ? 1 : 0
+  count      = var.enabled && local.public_count > 0 && var.enable_public_acl && (var.type == "public" || var.type == "public-private" || var.type == "public-private-database" || var.type == "public-database") ? 1 : 0
   vpc_id     = var.vpc_id
   subnet_ids = aws_subnet.public[*].id
   tags       = module.public-labels.tags
@@ -97,7 +97,7 @@ resource "aws_network_acl" "public" {
 #tfsec:ignore:aws-ec2-no-excessive-port-access
 #tfsec:ignore:aws-ec2-no-public-ingress-acl
 resource "aws_network_acl_rule" "public_inbound" {
-  count           = var.enabled && local.public_count > 0 && var.enable_public_acl && (var.type == "public" || var.type == "public-private" || var.type == "public-private-database") ? length(var.public_inbound_acl_rules) : 0
+  count           = var.enabled && local.public_count > 0 && var.enable_public_acl && (var.type == "public" || var.type == "public-private" || var.type == "public-private-database" || var.type == "public-database") ? length(var.public_inbound_acl_rules) : 0
   network_acl_id  = aws_network_acl.public[0].id
   egress          = false
   rule_number     = var.public_inbound_acl_rules[count.index]["rule_number"]
@@ -113,7 +113,7 @@ resource "aws_network_acl_rule" "public_inbound" {
 
 #tfsec:ignore:aws-ec2-no-excessive-port-access
 resource "aws_network_acl_rule" "public_outbound" {
-  count           = var.enabled && local.public_count > 0 && var.enable_public_acl && (var.type == "public" || var.type == "public-private" || var.type == "public-private-database") ? length(var.public_outbound_acl_rules) : 0
+  count           = var.enabled && local.public_count > 0 && var.enable_public_acl && (var.type == "public" || var.type == "public-private" || var.type == "public-private-database" || var.type == "public-database") ? length(var.public_outbound_acl_rules) : 0
   network_acl_id  = aws_network_acl.public[0].id
   egress          = true
   rule_number     = var.public_outbound_acl_rules[count.index]["rule_number"]
@@ -233,7 +233,7 @@ resource "aws_subnet" "private" {
 ## Below resource will deploy network acl and its rules that will be attached to private subnets.
 ##-----------------------------------------------------------------------------
 resource "aws_network_acl" "private" {
-  count      = var.enabled && var.enable_private_acl && (var.type == "private" || var.type == "public-private" || var.type == "public-private-database") ? 1 : 0
+  count      = var.enabled && var.enable_private_acl && (var.type == "private" || var.type == "public-private" || var.type == "public-private-database" || var.type == "public-database") ? 1 : 0
   vpc_id     = var.vpc_id
   subnet_ids = aws_subnet.private[*].id
   tags       = module.private-labels.tags
@@ -243,7 +243,7 @@ resource "aws_network_acl" "private" {
 #tfsec:ignore:aws-ec2-no-excessive-port-access
 #tfsec:ignore:aws-ec2-no-public-ingress-acl
 resource "aws_network_acl_rule" "private_inbound" {
-  count           = var.enabled && var.enable_private_acl && (var.type == "private" || var.type == "public-private" || var.type == "public-private-database") ? length(var.private_inbound_acl_rules) : 0
+  count           = var.enabled && var.enable_private_acl && (var.type == "private" || var.type == "public-private" || var.type == "public-private-database" || var.type == "public-database") ? length(var.private_inbound_acl_rules) : 0
   network_acl_id  = aws_network_acl.private[0].id
   egress          = false
   rule_number     = var.private_inbound_acl_rules[count.index]["rule_number"]
@@ -334,6 +334,7 @@ resource "aws_nat_gateway" "private" {
   )
 }
 
+
 ##-----------------------------------------------------------------------------
 ## Below resource will deploy flow logs for private subnet.
 ##-----------------------------------------------------------------------------
@@ -409,7 +410,7 @@ resource "aws_subnet" "database" {
 
 #tfsec:ignore:aws-ec2-no-excessive-port-access
 resource "aws_network_acl" "database" {
-  count      = var.enabled && local.database_count > 0 && var.enable_database_acl && (var.type == "database" || var.type == "public-private-database") ? 1 : 0
+  count      = var.enabled && local.database_count > 0 && var.enable_database_acl && (var.type == "database" || var.type == "public-private-database" || var.type == "public-database") ? 1 : 0
   vpc_id     = var.vpc_id
   subnet_ids = aws_subnet.database[*].id
   tags       = module.database-labels.tags
@@ -419,7 +420,7 @@ resource "aws_network_acl" "database" {
 #tfsec:ignore:aws-ec2-no-public-ingress-acl
 #tfsec:ignore:aws-ec2-no-excessive-port-access
 resource "aws_network_acl_rule" "database_inbound" {
-  count           = var.enabled && local.database_count > 0 && var.enable_database_acl && (var.type == "database" || var.type == "public-private-database") ? length(var.database_inbound_acl_rules) : 0
+  count           = var.enabled && local.database_count > 0 && var.enable_database_acl && (var.type == "database" || var.type == "public-private-database" || var.type == "public-database") ? length(var.database_inbound_acl_rules) : 0
   network_acl_id  = aws_network_acl.database[0].id
   egress          = false
   rule_number     = var.database_inbound_acl_rules[count.index]["rule_number"]

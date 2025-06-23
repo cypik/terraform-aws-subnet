@@ -22,7 +22,7 @@ To use this module, include it in your Terraform configuration file and provide 
 ```hcl
 module "private-subnets" {
   source              = "cypik/subnet/aws"
-  version             = "1.0.3"
+  version             = "1.0.4"
   name                = "app"
   environment         = "test"
   nat_gateway_enabled = true
@@ -42,7 +42,7 @@ module "private-subnets" {
 ```hcl
 module "subnets" {
   source              = "cypik/subnet/aws"
-  version             = "1.0.3"
+  version             = "1.0.4"
   name                = "app"
   environment         = "test"
   nat_gateway_enabled = true
@@ -62,8 +62,8 @@ module "subnets" {
 
 ```hcl
 module "subnets" {
-  source                                         = "cypik/subnet/aws"
-  version                                        = "1.0.3"
+  source              = "cypik/subnet/aws"
+  version             = "1.0.4"
   name                = "app"
   environment         = "test"
   nat_gateway_enabled = true
@@ -82,7 +82,7 @@ module "subnets" {
 ```hcl
 module "subnet" {
   source             = "cypik/subnet/aws"
-  version            = "1.0.3"
+  version            = "1.0.4"
   name               = "app"
   environment        = "test"
   availability_zones = ["eu-west-1a", "eu-west-1b", ]
@@ -95,13 +95,12 @@ module "subnet" {
 }
 ```
 
-
 # Example: database-subnet
 
 ```hcl
 module "subnet" {
   source             = "cypik/subnet/aws"
-  version            = "1.0.3"
+  version            = "1.0.4"
   name               = "app"
   environment        = "test"
   availability_zones = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
@@ -119,7 +118,7 @@ You can customize the input variables according to your specific requirements.
 ```hcl
 module "subnet" {
   source              = "cypik/subnet/aws"
-  version             = "1.0.3"
+  version             = "1.0.4"
   name                = "app"
   environment         = "test"
   availability_zones  = ["eu-west-1a", "eu-west-1b", ]
@@ -132,7 +131,24 @@ module "subnet" {
   igw_id              = module.vpc.igw_id
 }
 ```
+# Example: public-database
 
+```hcl
+module "subnet" {
+  source              = "cypik/subnet/aws"
+  version             = "1.0.4"
+  name                = "app"
+  environment         = "test"
+  availability_zones  = ["eu-west-1a", "eu-west-1b", "eu-west-1c" ]
+  vpc_id              = module.vpc.vpc_id
+  type                = "public-database"
+  cidr_block          = module.vpc.vpc_cidr_block
+  ipv6_cidr_block     = module.vpc.ipv6_cidr_block
+  igw_id              = module.vpc.igw_id
+  enable_ipv6         = true
+}
+
+```
 ## Examples
 For detailed examples on how to use this module, please refer to the [Examples](https://github.com/cypik/terraform-aws-subnet/tree/master/_example) directory within this repository.
 
