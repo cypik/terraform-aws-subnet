@@ -22,7 +22,7 @@ To use this module, include it in your Terraform configuration file and provide 
 ```hcl
 module "private-subnets" {
   source              = "cypik/subnet/aws"
-  version             = "1.0.4"
+  version             = "1.0.5"
   name                = "app"
   environment         = "test"
   nat_gateway_enabled = true
@@ -42,7 +42,7 @@ module "private-subnets" {
 ```hcl
 module "subnets" {
   source              = "cypik/subnet/aws"
-  version             = "1.0.4"
+  version             = "1.0.5"
   name                = "app"
   environment         = "test"
   nat_gateway_enabled = true
@@ -63,7 +63,7 @@ module "subnets" {
 ```hcl
 module "subnets" {
   source              = "cypik/subnet/aws"
-  version             = "1.0.4"
+  version             = "1.0.5"
   name                = "app"
   environment         = "test"
   nat_gateway_enabled = true
@@ -82,7 +82,7 @@ module "subnets" {
 ```hcl
 module "subnet" {
   source             = "cypik/subnet/aws"
-  version            = "1.0.4"
+  version            = "1.0.5"
   name               = "app"
   environment        = "test"
   availability_zones = ["eu-west-1a", "eu-west-1b", ]
@@ -100,7 +100,7 @@ module "subnet" {
 ```hcl
 module "subnet" {
   source             = "cypik/subnet/aws"
-  version            = "1.0.4"
+  version            = "1.0.5"
   name               = "app"
   environment        = "test"
   availability_zones = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
@@ -118,7 +118,7 @@ You can customize the input variables according to your specific requirements.
 ```hcl
 module "subnet" {
   source              = "cypik/subnet/aws"
-  version             = "1.0.4"
+  version             = "1.0.5"
   name                = "app"
   environment         = "test"
   availability_zones  = ["eu-west-1a", "eu-west-1b", ]
@@ -136,7 +136,7 @@ module "subnet" {
 ```hcl
 module "subnet" {
   source              = "cypik/subnet/aws"
-  version             = "1.0.4"
+  version             = "1.0.5"
   name                = "app"
   environment         = "test"
   availability_zones  = ["eu-west-1a", "eu-west-1b", "eu-west-1c" ]

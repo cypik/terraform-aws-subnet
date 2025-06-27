@@ -7,7 +7,7 @@ provider "aws" {
 ##-----------------------------------------------------------------------------
 module "vpc" {
   source      = "cypik/vpc/aws"
-  version     = "1.0.2"
+  version     = "1.0.3"
   name        = "app"
   environment = "test"
   cidr_block  = "10.0.0.0/16"
@@ -28,6 +28,6 @@ module "private-subnets" {
   cidr_block          = module.vpc.vpc_cidr_block
   ipv6_cidr_block     = module.vpc.ipv6_cidr_block
   ipv4_private_cidrs  = ["10.0.3.0/24"]
-  public_subnet_ids   = ["subnet-061b3e910a79be5d6", "subnet-0dd5f7ebd0bb0922f"] # Use the output here
+  public_subnet_ids   = ["subnet-061b3xxxbe5d6", "subnet-xxxxxbb0922f"] # Use the output here
   enable_ipv6         = false
 }

@@ -170,6 +170,7 @@ resource "aws_route_table_association" "public" {
     aws_route_table.public,
   ]
 }
+
 ##-----------------------------------------------------------------------------
 ## Below resource will deploy flow logs for public subnet.
 ##-----------------------------------------------------------------------------
