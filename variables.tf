@@ -154,6 +154,7 @@ variable "ipv4_public_cidrs" {
   default     = []
   description = "Subnet CIDR blocks (e.g. `10.0.0.0/16`)."
 }
+
 variable "ipv4_private_cidrs" {
   type        = list(any)
   default     = []

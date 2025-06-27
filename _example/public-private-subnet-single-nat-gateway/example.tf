@@ -7,7 +7,7 @@ provider "aws" {
 ##-----------------------------------------------------------------------------
 module "vpc" {
   source      = "cypik/vpc/aws"
-  version     = "1.0.2"
+  version     = "1.0.3"
   name        = "app"
   environment = "test"
   cidr_block  = "10.0.0.0/16"

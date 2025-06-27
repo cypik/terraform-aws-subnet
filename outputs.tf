@@ -82,6 +82,7 @@ output "database_route_tables_id" {
   value       = aws_route_table.database[*].id
   description = "The ID of the routing table."
 }
+
 output "database_tags" {
   value       = module.database-labels.tags
   description = "A mapping of public tags to assign to the resource."
