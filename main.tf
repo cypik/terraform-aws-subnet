@@ -512,3 +512,50 @@ resource "aws_flow_log" "database_subnet_flow_log" {
     }
   )
 }
+
+resource "aws_vpc_endpoint" "private_endpoint" {
+  count = var.endpoint_enabled ? 1 : 0
+
+  vpc_id            = var.vpc_id
+  vpc_endpoint_type = var.vpc_endpoint_type
+  service_name      = var.service_name
+
+  resource_configuration_arn = var.resource_configuration_arn
+  service_network_arn        = var.service_network_arn
+  service_region             = var.service_region
+
+  route_table_ids = var.vpc_endpoint_type == "Gateway" ? aws_route_table.private[*].id : null
+
+  subnet_ids = var.vpc_endpoint_type == "Interface" ? (
+    var.subnet_id != null ? [var.subnet_id] : aws_subnet.private[*].id
+  ) : null
+
+  security_group_ids = var.vpc_endpoint_type == "Interface" ? var.security_group_ids : null
+
+  private_dns_enabled = var.vpc_endpoint_type == "Interface" ? var.private_dns_enabled : null
+  policy              = var.policy
+  ip_address_type     = var.ip_address_type
+  auto_accept         = var.auto_accept
+
+
+  dynamic "dns_options" {
+    for_each = var.dns_record_ip_type != null || var.private_dns_only_for_inbound_resolver_endpoint != null ? [1] : []
+    content {
+      dns_record_ip_type                             = var.dns_record_ip_type
+      private_dns_only_for_inbound_resolver_endpoint = var.private_dns_only_for_inbound_resolver_endpoint
+    }
+  }
+
+  tags = merge(
+    module.private-labels.tags,
+    {
+      "Name"    = format("%s-endpoint", module.private-labels.name)
+      "Service" = var.service_name
+    }
+  )
+
+  depends_on = [
+    aws_subnet.private,
+    aws_route_table.private
+  ]
+}

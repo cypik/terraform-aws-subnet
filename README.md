@@ -22,7 +22,7 @@ To use this module, include it in your Terraform configuration file and provide 
 ```hcl
 module "private-subnets" {
   source              = "cypik/subnet/aws"
-  version             = "1.0.5"
+  version             = "1.0.6"
   name                = "app"
   environment         = "test"
   nat_gateway_enabled = true
@@ -42,7 +42,7 @@ module "private-subnets" {
 ```hcl
 module "subnets" {
   source              = "cypik/subnet/aws"
-  version             = "1.0.5"
+  version             = "1.0.6"
   name                = "app"
   environment         = "test"
   nat_gateway_enabled = true
@@ -63,7 +63,7 @@ module "subnets" {
 ```hcl
 module "subnets" {
   source              = "cypik/subnet/aws"
-  version             = "1.0.5"
+  version             = "1.0.6"
   name                = "app"
   environment         = "test"
   nat_gateway_enabled = true
@@ -82,7 +82,7 @@ module "subnets" {
 ```hcl
 module "subnet" {
   source             = "cypik/subnet/aws"
-  version            = "1.0.5"
+  version            = "1.0.6"
   name               = "app"
   environment        = "test"
   availability_zones = ["eu-west-1a", "eu-west-1b", ]
@@ -100,7 +100,7 @@ module "subnet" {
 ```hcl
 module "subnet" {
   source             = "cypik/subnet/aws"
-  version            = "1.0.5"
+  version            = "1.0.6"
   name               = "app"
   environment        = "test"
   availability_zones = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
@@ -118,7 +118,7 @@ You can customize the input variables according to your specific requirements.
 ```hcl
 module "subnet" {
   source              = "cypik/subnet/aws"
-  version             = "1.0.5"
+  version             = "1.0.6"
   name                = "app"
   environment         = "test"
   availability_zones  = ["eu-west-1a", "eu-west-1b", ]
@@ -136,7 +136,7 @@ module "subnet" {
 ```hcl
 module "subnet" {
   source              = "cypik/subnet/aws"
-  version             = "1.0.5"
+  version             = "1.0.6"
   name                = "app"
   environment         = "test"
   availability_zones  = ["eu-west-1a", "eu-west-1b", "eu-west-1c" ]
@@ -148,6 +148,27 @@ module "subnet" {
   enable_ipv6         = true
 }
 
+```
+# Example: endpoint-subnet
+
+```hcl
+module "endpoint-subnet" {
+  source              = "cypik/subnet/aws"
+  version             = "1.0.6"
+  name                = "app"
+  environment         = "test"
+  availability_zones  = ["us-west-1a", "us-west-1c"]
+  vpc_id              = module.vpc.vpc_id
+  type                = "public-private"
+  vpc_endpoint_type   = "Gateway"
+  service_name        = "com.amazonaws.${local.region}.s3"
+  igw_id              = module.vpc.igw_id
+  cidr_block          = module.vpc.vpc_cidr_block
+  ipv6_cidr_block     = module.vpc.ipv6_cidr_block
+  enable_ipv6         = false
+  nat_gateway_enabled = false
+  endpoint_enabled    = true
+}
 ```
 ## Examples
 For detailed examples on how to use this module, please refer to the [Examples](https://github.com/cypik/terraform-aws-subnet/tree/master/_example) directory within this repository.
@@ -163,14 +184,14 @@ This project is licensed under the **MIT** License - see the [LICENSE](https://g
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.9.5 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >=5.67.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >=1.12.1 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >=6.9.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >=5.67.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >=6.9.0 |
 
 ## Modules
 
@@ -210,12 +231,14 @@ This project is licensed under the **MIT** License - see the [LICENSE](https://g
 | [aws_subnet.database](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/subnet) | resource |
 | [aws_subnet.private](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/subnet) | resource |
 | [aws_subnet.public](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/subnet) | resource |
+| [aws_vpc_endpoint.private_endpoint](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc_endpoint) | resource |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_attributes"></a> [attributes](#input\_attributes) | Additional attributes (e.g. `1`). | `list(any)` | `[]` | no |
+| <a name="input_auto_accept"></a> [auto\_accept](#input\_auto\_accept) | Accept the VPC endpoint automatically if in the same AWS account | `bool` | `true` | no |
 | <a name="input_availability_zones"></a> [availability\_zones](#input\_availability\_zones) | List of Availability Zones (e.g. `['us-east-1a', 'us-east-1b', 'us-east-1c']`). | `list(string)` | `[]` | no |
 | <a name="input_cidr_block"></a> [cidr\_block](#input\_cidr\_block) | Base CIDR block which is divided into subnet CIDR blocks (e.g. `10.0.0.0/16`). | `string` | `null` | no |
 | <a name="input_customer_owned_ipv4_pool"></a> [customer\_owned\_ipv4\_pool](#input\_customer\_owned\_ipv4\_pool) | The customer-owned IPv4 address pool for the subnet | `string` | `""` | no |
@@ -230,6 +253,7 @@ This project is licensed under the **MIT** License - see the [LICENSE](https://g
 | <a name="input_database_subnet_private_dns_hostname_type_on_launch"></a> [database\_subnet\_private\_dns\_hostname\_type\_on\_launch](#input\_database\_subnet\_private\_dns\_hostname\_type\_on\_launch) | The type of hostnames to assign to instances in the subnet at launch. For IPv6-only subnets, an instance DNS name must be based on the instance ID. For dual-stack and IPv4-only subnets, you can specify whether DNS names use the instance IPv4 address or the instance ID. Valid values: `ip-name`, `resource-name` | `string` | `null` | no |
 | <a name="input_delimiter"></a> [delimiter](#input\_delimiter) | Delimiter to be used between `organization`, `environment`, `name` and `attributes`. | `string` | `"-"` | no |
 | <a name="input_deliver_cross_account_role"></a> [deliver\_cross\_account\_role](#input\_deliver\_cross\_account\_role) | ARN of the IAM role that allows Amazon EC2 to publish flow logs across accounts. | `string` | `null` | no |
+| <a name="input_dns_record_ip_type"></a> [dns\_record\_ip\_type](#input\_dns\_record\_ip\_type) | The DNS record IP type (ipv4, dualstack, service-defined, ipv6) | `string` | `null` | no |
 | <a name="input_enable_database_acl"></a> [enable\_database\_acl](#input\_enable\_database\_acl) | Set to false to prevent the module from creating any resources. | `bool` | `true` | no |
 | <a name="input_enable_flow_log"></a> [enable\_flow\_log](#input\_enable\_flow\_log) | Enable subnet\_flow\_log logs. | `bool` | `false` | no |
 | <a name="input_enable_ipv6"></a> [enable\_ipv6](#input\_enable\_ipv6) | Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block | `bool` | `false` | no |
@@ -237,6 +261,7 @@ This project is licensed under the **MIT** License - see the [LICENSE](https://g
 | <a name="input_enable_private_acl"></a> [enable\_private\_acl](#input\_enable\_private\_acl) | Set to false to prevent the module from creating any resources. | `bool` | `true` | no |
 | <a name="input_enable_public_acl"></a> [enable\_public\_acl](#input\_enable\_public\_acl) | Set to false to prevent the module from creating any resources. | `bool` | `true` | no |
 | <a name="input_enabled"></a> [enabled](#input\_enabled) | Set to false to prevent the module from creating any resources. | `bool` | `true` | no |
+| <a name="input_endpoint_enabled"></a> [endpoint\_enabled](#input\_endpoint\_enabled) | Whether to create the VPC Endpoint or not | `bool` | `false` | no |
 | <a name="input_eni_id"></a> [eni\_id](#input\_eni\_id) | Elastic Network Interface ID to attach to. | `string` | `null` | no |
 | <a name="input_environment"></a> [environment](#input\_environment) | Environment (e.g. `prod`, `dev`, `staging`). | `string` | `""` | no |
 | <a name="input_extra_database_tags"></a> [extra\_database\_tags](#input\_extra\_database\_tags) | Additional private subnet tags. | `map(any)` | `{}` | no |
@@ -257,6 +282,7 @@ This project is licensed under the **MIT** License - see the [LICENSE](https://g
 | <a name="input_flow_log_transit_gateway_id"></a> [flow\_log\_transit\_gateway\_id](#input\_flow\_log\_transit\_gateway\_id) | Transit Gateway ID to attach to. | `string` | `null` | no |
 | <a name="input_flow_log_vpc_id"></a> [flow\_log\_vpc\_id](#input\_flow\_log\_vpc\_id) | VPC ID to attach to. | `string` | `null` | no |
 | <a name="input_igw_id"></a> [igw\_id](#input\_igw\_id) | Internet Gateway ID that is used as a default route when creating public subnets (e.g. `igw-9c26a123`). | `string` | `""` | no |
+| <a name="input_ip_address_type"></a> [ip\_address\_type](#input\_ip\_address\_type) | IP address type (ipv4, dualstack, ipv6) | `string` | `null` | no |
 | <a name="input_ipv4_database_cidrs"></a> [ipv4\_database\_cidrs](#input\_ipv4\_database\_cidrs) | Subnet CIDR blocks (e.g. `10.0.0.0/16`). | `list(any)` | `[]` | no |
 | <a name="input_ipv4_private_cidrs"></a> [ipv4\_private\_cidrs](#input\_ipv4\_private\_cidrs) | Subnet CIDR blocks (e.g. `10.0.0.0/16`). | `list(any)` | `[]` | no |
 | <a name="input_ipv4_public_cidrs"></a> [ipv4\_public\_cidrs](#input\_ipv4\_public\_cidrs) | Subnet CIDR blocks (e.g. `10.0.0.0/16`). | `list(any)` | `[]` | no |
@@ -270,6 +296,9 @@ This project is licensed under the **MIT** License - see the [LICENSE](https://g
 | <a name="input_nat_gateway_destination_cidr_block"></a> [nat\_gateway\_destination\_cidr\_block](#input\_nat\_gateway\_destination\_cidr\_block) | The CIDR block for the NAT gateway route. | `string` | `"0.0.0.0/0"` | no |
 | <a name="input_nat_gateway_enabled"></a> [nat\_gateway\_enabled](#input\_nat\_gateway\_enabled) | Flag to enable/disable NAT Gateways creation in public subnets. | `bool` | `false` | no |
 | <a name="input_outpost_arn"></a> [outpost\_arn](#input\_outpost\_arn) | The ARN of the Outpost to create the subnet in | `string` | `""` | no |
+| <a name="input_policy"></a> [policy](#input\_policy) | IAM policy JSON for the endpoint | `string` | `""` | no |
+| <a name="input_private_dns_enabled"></a> [private\_dns\_enabled](#input\_private\_dns\_enabled) | Whether to associate private DNS with the VPC | `bool` | `false` | no |
+| <a name="input_private_dns_only_for_inbound_resolver_endpoint"></a> [private\_dns\_only\_for\_inbound\_resolver\_endpoint](#input\_private\_dns\_only\_for\_inbound\_resolver\_endpoint) | Enable private DNS only for inbound resolver endpoint | `bool` | `null` | no |
 | <a name="input_private_inbound_acl_rules"></a> [private\_inbound\_acl\_rules](#input\_private\_inbound\_acl\_rules) | Private subnets inbound network ACLs | `list(map(string))` | <pre>[<br>  {<br>    "cidr_block": "0.0.0.0/0",<br>    "from_port": 0,<br>    "protocol": "-1",<br>    "rule_action": "allow",<br>    "rule_number": 100,<br>    "to_port": 0<br>  }<br>]</pre> | no |
 | <a name="input_private_ipv6_cidrs"></a> [private\_ipv6\_cidrs](#input\_private\_ipv6\_cidrs) | Private Subnet CIDR blocks (e.g. `2a05:d018:832:ca02::/64`). | `list(any)` | `[]` | no |
 | <a name="input_private_outbound_acl_rules"></a> [private\_outbound\_acl\_rules](#input\_private\_outbound\_acl\_rules) | Private subnets outbound network ACLs | `list(map(string))` | <pre>[<br>  {<br>    "cidr_block": "0.0.0.0/0",<br>    "from_port": 0,<br>    "protocol": "-1",<br>    "rule_action": "allow",<br>    "rule_number": 100,<br>    "to_port": 0<br>  }<br>]</pre> | no |
@@ -292,9 +321,16 @@ This project is licensed under the **MIT** License - see the [LICENSE](https://g
 | <a name="input_public_subnet_ipv6_native"></a> [public\_subnet\_ipv6\_native](#input\_public\_subnet\_ipv6\_native) | Indicates whether to create an IPv6-only public subnet. Default: `false` | `bool` | `false` | no |
 | <a name="input_public_subnet_private_dns_hostname_type_on_launch"></a> [public\_subnet\_private\_dns\_hostname\_type\_on\_launch](#input\_public\_subnet\_private\_dns\_hostname\_type\_on\_launch) | The type of private DNS hostname to assign to instances in this subnet at launch. Must be either 'ip-name' or 'resource-name'. | `string` | `"ip-name"` | no |
 | <a name="input_repository"></a> [repository](#input\_repository) | Terraform current module repo | `string` | `"https://github.com/cypik/terraform-aws-subnet"` | no |
+| <a name="input_resource_configuration_arn"></a> [resource\_configuration\_arn](#input\_resource\_configuration\_arn) | Optional Resource Configuration ARN (for certain endpoint types) | `string` | `null` | no |
+| <a name="input_security_group_ids"></a> [security\_group\_ids](#input\_security\_group\_ids) | Security groups to associate (for interface endpoints) | `list(string)` | `[]` | no |
+| <a name="input_service_name"></a> [service\_name](#input\_service\_name) | The service name for the endpoint | `string` | `""` | no |
+| <a name="input_service_network_arn"></a> [service\_network\_arn](#input\_service\_network\_arn) | Optional Service Network ARN (for certain endpoint types) | `string` | `null` | no |
+| <a name="input_service_region"></a> [service\_region](#input\_service\_region) | Optional service region (used in Interface endpoints) | `string` | `null` | no |
 | <a name="input_single_nat_gateway"></a> [single\_nat\_gateway](#input\_single\_nat\_gateway) | Enable for only single NAT Gateway in one Availability Zone | `bool` | `false` | no |
+| <a name="input_subnet_id"></a> [subnet\_id](#input\_subnet\_id) | Optional subnet ID for manual IP config | `string` | `null` | no |
 | <a name="input_transit_gateway_id"></a> [transit\_gateway\_id](#input\_transit\_gateway\_id) | Transit Gateway ID to attach to. | `string` | `null` | no |
 | <a name="input_type"></a> [type](#input\_type) | Type of subnets to create (`private` or `public`). | `string` | `""` | no |
+| <a name="input_vpc_endpoint_type"></a> [vpc\_endpoint\_type](#input\_vpc\_endpoint\_type) | The VPC endpoint type (Gateway, Interface, etc.) | `string` | `"Gateway"` | no |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | The VPC ID where the public and private subnets will be created. | `string` | n/a | yes |
 
 ## Outputs
@@ -344,4 +380,13 @@ This project is licensed under the **MIT** License - see the [LICENSE](https://g
 | <a name="output_public_subnet_tags_all"></a> [public\_subnet\_tags\_all](#output\_public\_subnet\_tags\_all) | All tags for public subnets |
 | <a name="output_public_tags"></a> [public\_tags](#output\_public\_tags) | A mapping of public tags to assign to the resource. |
 | <a name="output_route_table_vpc_id"></a> [route\_table\_vpc\_id](#output\_route\_table\_vpc\_id) | VPC IDs of all private route tables |
+| <a name="output_vpc_endpoint_arns"></a> [vpc\_endpoint\_arns](#output\_vpc\_endpoint\_arns) | The ARNs of the VPC endpoints |
+| <a name="output_vpc_endpoint_cidr_blocks"></a> [vpc\_endpoint\_cidr\_blocks](#output\_vpc\_endpoint\_cidr\_blocks) | The list of CIDR blocks for the Gateway type endpoints |
+| <a name="output_vpc_endpoint_dns_entries"></a> [vpc\_endpoint\_dns\_entries](#output\_vpc\_endpoint\_dns\_entries) | The DNS entries for Interface type endpoints |
+| <a name="output_vpc_endpoint_ids"></a> [vpc\_endpoint\_ids](#output\_vpc\_endpoint\_ids) | The IDs of the VPC endpoints |
+| <a name="output_vpc_endpoint_network_interface_ids"></a> [vpc\_endpoint\_network\_interface\_ids](#output\_vpc\_endpoint\_network\_interface\_ids) | The network interfaces for Interface type endpoints |
+| <a name="output_vpc_endpoint_owner_ids"></a> [vpc\_endpoint\_owner\_ids](#output\_vpc\_endpoint\_owner\_ids) | The AWS account IDs that own the VPC endpoints |
+| <a name="output_vpc_endpoint_prefix_list_ids"></a> [vpc\_endpoint\_prefix\_list\_ids](#output\_vpc\_endpoint\_prefix\_list\_ids) | The prefix list IDs for Gateway type endpoints |
+| <a name="output_vpc_endpoint_requester_managed"></a> [vpc\_endpoint\_requester\_managed](#output\_vpc\_endpoint\_requester\_managed) | Whether each VPC Endpoint is managed by its service |
+| <a name="output_vpc_endpoint_states"></a> [vpc\_endpoint\_states](#output\_vpc\_endpoint\_states) | The states of the VPC endpoints |
 <!-- END_TF_DOCS -->
