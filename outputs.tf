@@ -209,3 +209,55 @@ output "flow_log_tags_all" {
   value       = aws_flow_log.database_subnet_flow_log[*].tags_all
   description = "A map of tags assigned to the resource, including those inherited from the provider default_tags configuration block."
 }
+
+output "vpc_endpoint_ids" {
+  value       = [for ep in aws_vpc_endpoint.private_endpoint : ep.id]
+  description = "The IDs of the VPC endpoints"
+}
+
+output "vpc_endpoint_arns" {
+  value       = [for ep in aws_vpc_endpoint.private_endpoint : ep.arn]
+  description = "The ARNs of the VPC endpoints"
+}
+
+output "vpc_endpoint_cidr_blocks" {
+  value       = [for ep in aws_vpc_endpoint.private_endpoint : ep.cidr_blocks]
+  description = "The list of CIDR blocks for the Gateway type endpoints"
+}
+
+output "vpc_endpoint_dns_entries" {
+  value = [
+    for ep in aws_vpc_endpoint.private_endpoint : [
+      for dns in ep.dns_entry : {
+        dns_name       = dns.dns_name
+        hosted_zone_id = dns.hosted_zone_id
+      }
+    ]
+  ]
+  description = "The DNS entries for Interface type endpoints"
+}
+
+output "vpc_endpoint_network_interface_ids" {
+  value       = [for ep in aws_vpc_endpoint.private_endpoint : ep.network_interface_ids]
+  description = "The network interfaces for Interface type endpoints"
+}
+
+output "vpc_endpoint_owner_ids" {
+  value       = [for ep in aws_vpc_endpoint.private_endpoint : ep.owner_id]
+  description = "The AWS account IDs that own the VPC endpoints"
+}
+
+output "vpc_endpoint_prefix_list_ids" {
+  value       = [for ep in aws_vpc_endpoint.private_endpoint : ep.prefix_list_id]
+  description = "The prefix list IDs for Gateway type endpoints"
+}
+
+output "vpc_endpoint_requester_managed" {
+  value       = [for ep in aws_vpc_endpoint.private_endpoint : ep.requester_managed]
+  description = "Whether each VPC Endpoint is managed by its service"
+}
+
+output "vpc_endpoint_states" {
+  value       = [for ep in aws_vpc_endpoint.private_endpoint : ep.state]
+  description = "The states of the VPC endpoints"
+}

@@ -550,3 +550,89 @@ variable "deliver_cross_account_role" {
   default     = null
   description = "ARN of the IAM role that allows Amazon EC2 to publish flow logs across accounts."
 }
+
+# VPC Endpoint configuration
+
+variable "auto_accept" {
+  type        = bool
+  default     = true
+  description = "Accept the VPC endpoint automatically if in the same AWS account"
+}
+
+variable "vpc_endpoint_type" {
+  type        = string
+  default     = "Gateway"
+  description = "The VPC endpoint type (Gateway, Interface, etc.)"
+}
+
+variable "service_name" {
+  type        = string
+  default     = ""
+  description = "The service name for the endpoint"
+}
+
+variable "security_group_ids" {
+  type        = list(string)
+  default     = []
+  description = "Security groups to associate (for interface endpoints)"
+}
+
+variable "private_dns_enabled" {
+  type        = bool
+  default     = false
+  description = "Whether to associate private DNS with the VPC"
+}
+
+variable "ip_address_type" {
+  type        = string
+  default     = null
+  description = "IP address type (ipv4, dualstack, ipv6)"
+}
+
+variable "policy" {
+  type        = string
+  default     = ""
+  description = "IAM policy JSON for the endpoint"
+}
+
+variable "endpoint_enabled" {
+  type        = bool
+  default     = false
+  description = "Whether to create the VPC Endpoint or not"
+}
+
+variable "dns_record_ip_type" {
+  type        = string
+  default     = null
+  description = "The DNS record IP type (ipv4, dualstack, service-defined, ipv6)"
+}
+
+variable "private_dns_only_for_inbound_resolver_endpoint" {
+  type        = bool
+  default     = null
+  description = "Enable private DNS only for inbound resolver endpoint"
+}
+
+variable "service_region" {
+  type        = string
+  default     = null
+  description = "Optional service region (used in Interface endpoints)"
+}
+
+variable "resource_configuration_arn" {
+  type        = string
+  default     = null
+  description = "Optional Resource Configuration ARN (for certain endpoint types)"
+}
+
+variable "service_network_arn" {
+  type        = string
+  default     = null
+  description = "Optional Service Network ARN (for certain endpoint types)"
+}
+
+variable "subnet_id" {
+  type        = string
+  default     = null
+  description = "Optional subnet ID for manual IP config"
+}
