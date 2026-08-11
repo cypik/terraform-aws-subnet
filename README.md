@@ -184,22 +184,22 @@ This project is licensed under the **MIT** License - see the [LICENSE](https://g
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >=1.12.1 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >=6.9.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.15.8 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.58.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >=6.9.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.58.0 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_database-labels"></a> [database-labels](#module\_database-labels) | cypik/labels/aws | 1.0.2 |
-| <a name="module_private-labels"></a> [private-labels](#module\_private-labels) | cypik/labels/aws | 1.0.2 |
-| <a name="module_public-labels"></a> [public-labels](#module\_public-labels) | cypik/labels/aws | 1.0.2 |
+| <a name="module_database-labels"></a> [database-labels](#module\_database-labels) | cypik/labels/aws | 1.0.3 |
+| <a name="module_private-labels"></a> [private-labels](#module\_private-labels) | cypik/labels/aws | 1.0.3 |
+| <a name="module_public-labels"></a> [public-labels](#module\_public-labels) | cypik/labels/aws | 1.0.3 |
 
 ## Resources
 
