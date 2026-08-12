@@ -9,7 +9,7 @@ locals {
 ##-----------------------------------------------------------------------------
 module "private-labels" {
   source      = "cypik/labels/aws"
-  version     = "1.0.3"
+  version     = "1.0.4"
   name        = var.name
   repository  = var.repository
   environment = var.environment
@@ -23,7 +23,7 @@ module "private-labels" {
 
 module "public-labels" {
   source      = "cypik/labels/aws"
-  version     = "1.0.3"
+  version     = "1.0.4"
   repository  = var.repository
   environment = var.environment
   managedby   = var.managedby
@@ -36,7 +36,7 @@ module "public-labels" {
 
 module "database-labels" {
   source      = "cypik/labels/aws"
-  version     = "1.0.3"
+  version     = "1.0.4"
   repository  = var.repository
   environment = var.environment
   managedby   = var.managedby
